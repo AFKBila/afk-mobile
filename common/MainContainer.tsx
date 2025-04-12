@@ -1,17 +1,23 @@
-import { Platform, ScrollView, StyleSheet } from "react-native";
+import { Platform, ScrollView, StyleSheet, ViewStyle } from "react-native";
 import React, { ReactNode } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 
 interface MainContainerProps {
     children: ReactNode;
+    style?: ViewStyle;
+    contentContainerStyle?: ViewStyle;
 }
 
-const MainContainer: React.FC<MainContainerProps> = ({ children }) => {
+const MainContainer: React.FC<MainContainerProps> = ({
+    children,
+    style,
+    contentContainerStyle
+}) => {
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, style]}>
             <ScrollView
-                contentContainerStyle={styles.scrollContent}
+                contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >

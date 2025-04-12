@@ -18,7 +18,7 @@ type Props = {
 };
 
 export const Fonts: Props = {
-  regular: "GopherText",
+  regular: "System",
   sizes: {
     vs: 9,
     xs: 12,

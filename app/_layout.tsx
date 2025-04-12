@@ -13,7 +13,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    GopherText: require('../assets/fonts/GopherText-Regular.otf'),
+    GopherText: require('../assets/fonts/GopherText.otf'),
   });
 
   useEffect(() => {
@@ -41,8 +41,8 @@ function App() {
     <Stack screenOptions={{
       headerShown: false
     }}>
-      <Stack.Screen name="(home)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(home)" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

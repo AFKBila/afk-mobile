@@ -1,4 +1,4 @@
-import { StyleSheet, View, ViewStyle } from 'react-native'
+import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Colors } from '@/constants/Colors'
 
@@ -6,15 +6,21 @@ interface CarouselDotsProps {
     totalDots: number;
     currentIndex: number;
     style?: ViewStyle;
+    onPress?: () => void;
 }
 
 const CarouselDots: React.FC<CarouselDotsProps> = ({
     totalDots,
     currentIndex,
-    style
+    style,
+    onPress
 }) => {
     return (
-        <View style={[styles.container, style]}>
+        <TouchableOpacity
+            style={[styles.container, style]}
+            onPress={onPress}
+            disabled={!onPress}
+        >
             {Array.from({ length: totalDots }).map((_, index) => (
                 <View
                     key={index}
@@ -24,7 +30,7 @@ const CarouselDots: React.FC<CarouselDotsProps> = ({
                     ]}
                 />
             ))}
-        </View>
+        </TouchableOpacity>
     )
 }
 

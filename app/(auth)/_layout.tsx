@@ -9,6 +9,7 @@ const Layout = () => {
             <Stack.Screen name="get-started" />
             <Stack.Screen name="signup" />
             <Stack.Screen name="profile-setup" />
+            <Stack.Screen name="photo" />
             <Stack.Screen name="country" />
             <Stack.Screen name="final-signup" />
         </Stack>

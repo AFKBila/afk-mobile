@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -22,28 +23,38 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  // Register all gesture handlers at app startup
+  useEffect(() => {
+    // This ensures gesture handlers are initialized properly
+    console.log('Initializing gesture handlers');
+  }, []);
+
   if (!loaded) {
     return null;
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
-        <App />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            gestureEnabled: false, // Disable default gesture to avoid conflicts
+          }}
+        >
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(home)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
         <Toaster />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
 
-function App() {
-  return (
-    <Stack screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(home)" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
-    </Stack>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

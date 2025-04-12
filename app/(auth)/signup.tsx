@@ -2,25 +2,34 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
-import MainContainer from '@/common/MainContainer'
 import AuthHeader from '@/components/auth/AuthHeader'
 import CustomLoginButton from '@/components/auth/CustomLoginButton'
 import { router } from 'expo-router'
-import CarouselDots from '@/components/auth/CarouselDots'
+import SwipeableScreen from '@/components/auth/SwipeableScreen'
 
 function Signup() {
-    const [currentStep, setCurrentStep] = useState(0);
+    const currentStep = 0;
 
     const handleSocialLogin = (provider: string) => {
         console.log(`Login with ${provider}`);
-        // setCurrentStep(1);
         router.push("/(auth)/profile-setup")
     }
 
+    const handleNext = () => {
+        router.push("/(auth)/profile-setup");
+    }
+
+    const handlePrevious = () => {
+        // This is the first screen, so no previous navigation
+        // You could navigate to login if you have that screen
+    }
+
     return (
-        <MainContainer
-            style={{ backgroundColor: Colors.primary }}
-            contentContainerStyle={styles.contentContainer}
+        <SwipeableScreen
+            totalSteps={3}
+            currentStep={currentStep}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
         >
             <AuthHeader title="Sign Up" imageSource={require('@/assets/images/duck.png')} />
 
@@ -50,24 +59,13 @@ function Signup() {
                     />
                 </View>
             </View>
-
-            <CarouselDots
-                totalDots={3}
-                currentIndex={currentStep}
-                style={styles.dotsContainer}
-            />
-        </MainContainer>
+        </SwipeableScreen>
     )
 }
 
 export default Signup
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        flex: 1,
-        justifyContent: 'space-between',
-        paddingVertical: 40,
-    },
     formContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -84,13 +82,9 @@ const styles = StyleSheet.create({
     socialButtonsContainer: {
         width: '100%',
         marginTop: 20,
-        // marginHorizontal: 50,
         paddingHorizontal: 60,
     },
     socialButton: {
         marginBottom: 16,
-    },
-    dotsContainer: {
-        marginBottom: 40,
     }
 })

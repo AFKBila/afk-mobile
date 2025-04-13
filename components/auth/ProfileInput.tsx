@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native'
+import { StyleSheet, Text, TextInput, View, StyleProp, TextStyle, ViewStyle } from 'react-native'
 import React from 'react'
 import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
@@ -7,8 +7,9 @@ interface ProfileInputProps {
     label: string;
     value: string;
     onChangeText: (text: string) => void;
-    style?: ViewStyle;
+    style?: StyleProp<ViewStyle>;
     placeholder?: string;
+    error?: string;
 }
 
 const ProfileInput: React.FC<ProfileInputProps> = ({
@@ -17,18 +18,20 @@ const ProfileInput: React.FC<ProfileInputProps> = ({
     onChangeText,
     style,
     placeholder = '',
+    error,
 }) => {
     return (
         <View style={[styles.container, style]}>
             <Text style={styles.label}>{label}</Text>
             <TextInput
-                style={styles.input}
+                style={[styles.input, error ? styles.inputError : null]}
                 value={value}
                 onChangeText={onChangeText}
                 placeholder={placeholder}
                 placeholderTextColor={Colors.grey}
                 selectionColor={Colors.white}
             />
+            {error && <Text style={styles.errorText}>{error}</Text>}
             <View style={styles.underline} />
         </View>
     )
@@ -51,6 +54,14 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.md,
         paddingVertical: 8,
         paddingHorizontal: 0,
+    },
+    inputError: {
+        borderBottomColor: '#ff6b6b',
+    },
+    errorText: {
+        color: '#ff6b6b',
+        marginTop: 5,
+        fontSize: Fonts.sizes.sm,
     },
     underline: {
         height: 1,

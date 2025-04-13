@@ -1,65 +1,101 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
 import AuthHeader from '@/components/auth/AuthHeader'
 import CustomLoginButton from '@/components/auth/CustomLoginButton'
 import { router } from 'expo-router'
-import SwipeableScreen from '@/components/auth/SwipeableScreen'
+import AuthContainer from '@/components/auth/AuthContainer'
+import { useOAuth } from '@clerk/clerk-expo'
+import { useWarmUpBrowser } from '@/utils/useWarmUpBrowser'
+import { toast } from 'sonner-native'
+import { handleAuthResult } from '@/utils/authHelpers'
+import LoadingIndicator from '@/components/common/LoadingIndicator'
 
 function Signup() {
+    useWarmUpBrowser();
     const currentStep = 0;
+    const [loading, setLoading] = useState(false);
+    const [provider, setProvider] = useState<string | null>(null);
 
-    const handleSocialLogin = (provider: string) => {
-        console.log(`Login with ${provider}`);
-        router.push("/(auth)/profile-setup")
-    }
+    // Set up OAuth for each provider
+    const { startOAuthFlow: startGoogleFlow } = useOAuth({ strategy: "oauth_google" });
+    const { startOAuthFlow: startAppleFlow } = useOAuth({ strategy: "oauth_apple" });
+    const { startOAuthFlow: startTwitterFlow } = useOAuth({ strategy: "oauth_twitter" });
 
-    const handleNext = () => {
-        router.push("/(auth)/profile-setup");
-    }
+    const handleSocialLogin = async (providerName: string) => {
+        setProvider(providerName);
+        setLoading(true);
 
-    const handlePrevious = () => {
-        // This is the first screen, so no previous navigation
-        // You could navigate to login if you have that screen
+        try {
+            let result;
+
+            switch (providerName) {
+                case 'Google':
+                    result = await startGoogleFlow();
+                    break;
+                case 'Apple':
+                    result = await startAppleFlow();
+                    break;
+                case 'Twitter':
+                    result = await startTwitterFlow();
+                    break;
+                default:
+                    throw new Error(`Unsupported provider: ${providerName}`);
+            }
+
+            handleAuthResult(result, true);
+        } catch (error) {
+            console.error(`Signup failed:`, error);
+            toast.error(`Failed to sign up with ${providerName}`);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
-        <SwipeableScreen
-            totalSteps={3}
+        <AuthContainer
+            totalSteps={4}
             currentStep={currentStep}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
         >
             <AuthHeader title="Sign Up" imageSource={require('@/assets/images/duck.png')} />
 
             <View style={styles.formContainer}>
                 <Text style={styles.subtitle}>Create your account</Text>
 
-                <View style={styles.socialButtonsContainer}>
-                    <CustomLoginButton
-                        title="Twitter"
-                        onPress={() => handleSocialLogin('twitter')}
-                        variant="primary"
-                        style={styles.socialButton}
-                    />
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <LoadingIndicator
+                            type="pulse"
+                            message={`Signing in with ${provider}...`}
+                        />
+                    </View>
+                ) : (
+                    <View style={styles.socialButtonsContainer}>
+                        <CustomLoginButton
+                            title="Twitter"
+                            onPress={() => handleSocialLogin('Twitter')}
+                            variant="primary"
+                            style={styles.socialButton}
+                        />
 
-                    <CustomLoginButton
-                        title="Apple"
-                        onPress={() => handleSocialLogin('apple')}
-                        variant="primary"
-                        style={styles.socialButton}
-                    />
+                        <CustomLoginButton
+                            title="Apple"
+                            onPress={() => handleSocialLogin('Apple')}
+                            variant="primary"
+                            style={styles.socialButton}
+                        />
 
-                    <CustomLoginButton
-                        title="Google"
-                        onPress={() => handleSocialLogin('google')}
-                        variant="primary"
-                        style={styles.socialButton}
-                    />
-                </View>
+                        <CustomLoginButton
+                            title="Google"
+                            onPress={() => handleSocialLogin('Google')}
+                            variant="primary"
+                            style={styles.socialButton}
+                        />
+                    </View>
+                )}
             </View>
-        </SwipeableScreen>
+        </AuthContainer>
     )
 }
 
@@ -86,5 +122,14 @@ const styles = StyleSheet.create({
     },
     socialButton: {
         marginBottom: 16,
+    },
+    loadingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    loadingText: {
+        color: Colors.white,
+        marginTop: 20,
+        fontSize: Fonts.sizes.md,
     }
 })

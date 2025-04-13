@@ -12,7 +12,7 @@ export default function GetStarted() {
     }
 
     const handleLogin = () => {
-        router.push('/(auth)/signup')
+        router.push('/(auth)/login')
     }
 
     return (

@@ -14,79 +14,118 @@ import { useAuth, useUser } from '@clerk/clerk-expo'
 const FinalSignup = () => {
     const [loading, setLoading] = useState(true);
     const [retrying, setRetrying] = useState(false);
-    const { user: storeUser } = useAuthStore();  // Renamed to storeUser for clarity
-    const { userId } = useAuth();
-    const { user: clerkUser, isLoaded } = useUser();  // Get Clerk user data
+    const { user: storeUser } = useAuthStore();
+    const { userId, sessionId, getToken } = useAuth();
+    const { user: clerkUser, isLoaded, isSignedIn } = useUser();
+
+    // Add immediate console log to see Clerk data as soon as component mounts
+    useEffect(() => {
+        console.log("=== CLERK DATA ON MOUNT ===");
+        console.log("Auth state:", { userId, sessionId, isLoaded, isSignedIn });
+        console.log("Clerk user object:", clerkUser);
+        console.log("Clerk user JSON:", JSON.stringify(clerkUser, null, 2));
+
+        if (clerkUser) {
+            console.log("Clerk user ID:", clerkUser.id);
+            console.log("Clerk user image:", clerkUser.imageUrl);
+            console.log("Clerk user email:", clerkUser.primaryEmailAddress?.emailAddress);
+            console.log("Clerk user name:", clerkUser.firstName, clerkUser.lastName);
+        } else {
+            console.log("Clerk user is null or undefined");
+        }
+    }, [clerkUser, isLoaded]);
+
+    // Log when isLoaded changes
+    useEffect(() => {
+        console.log("isLoaded changed to:", isLoaded);
+        if (isLoaded) {
+            console.log("Clerk data should be available now");
+            console.log("isSignedIn:", isSignedIn);
+            console.log("Clerk user after load:", clerkUser);
+        }
+    }, [isLoaded]);
 
     useEffect(() => {
-        // Only proceed when Clerk user data is loaded
-        if (!isLoaded) return;
+        // Wait a bit longer to ensure Clerk data is loaded
+        const timer = setTimeout(() => {
+            console.log("=== BEFORE SAVE USER DATA ===");
+            console.log("isLoaded:", isLoaded);
+            console.log("isSignedIn:", isSignedIn);
+            console.log("Clerk user before save:", clerkUser);
+            saveUserData();
+        }, 2000); // Increased to 2 seconds for more time to load
 
-        const saveUserData = async () => {
+        return () => clearTimeout(timer);
+    }, [storeUser, retrying, isLoaded, isSignedIn]);
+
+    const saveUserData = async () => {
+        try {
+            console.log("=== SAVE USER DATA FUNCTION ===");
+            console.log("Auth state:", { userId, sessionId, isLoaded, isSignedIn });
+            console.log("Clerk user data:", clerkUser);
+
+            // Try to get a token to verify authentication
+            let token = null;
             try {
-                // Use Clerk userId or generate a fallback
-                const userIdToUse = userId || storeUser?.id || `user_${Math.random().toString(36).substring(2, 15)}`;
-
-                console.log("Using user ID:", userIdToUse);
-                console.log("User data from store:", storeUser);
-
-                // Extract relevant Clerk data into a separate object
-                const clerkData = clerkUser ? {
-                    id: clerkUser.id,
-                    email: clerkUser.primaryEmailAddress?.emailAddress,
-                    firstName: clerkUser.firstName,
-                    lastName: clerkUser.lastName,
-                    username: clerkUser.username,
-                    imageUrl: clerkUser.imageUrl,
-                    createdAt: clerkUser.createdAt,
-                    updatedAt: clerkUser.updatedAt,
-                    // Add any other Clerk fields you want to preserve
-                } : null;
-
-                // Decide whether to use Clerk data or store data
-                // Priority: 1. Store data (from your app flow) 2. Clerk data 3. Default values
-                const userData = {
-                    id: userIdToUse,
-                    email: storeUser?.email || clerkUser?.primaryEmailAddress?.emailAddress || '',
-                    firstName: storeUser?.firstName || clerkUser?.firstName || '',
-                    lastName: storeUser?.lastName || clerkUser?.lastName || '',
-                    fullName: storeUser?.fullName || (clerkUser ? `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() : ''),
-                    username: storeUser?.username || clerkUser?.username || `user_${Math.random().toString(36).substring(2, 7)}`,
-                    profileImage: storeUser?.profileImage || clerkUser?.imageUrl || '',
-                    gender: storeUser?.gender || '',  // No equivalent in Clerk
-                    dateOfBirth: storeUser?.dateOfBirth || '',  // No equivalent in Clerk
-                    country: storeUser?.country || '',  // No equivalent in Clerk
-                    createdAt: storeUser?.createdAt || new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    // Add the clerkData object
-                    clerkData: clerkData,
-                };
-
-                // Save user data to Firestore
-                await setDoc(doc(db, 'users', userIdToUse), userData);
-
-                // Show success message
-                toast.success('Account setup complete!');
-
-                // Navigate to home screen after a brief delay
-                setTimeout(() => {
-                    router.push('/(home)/home');
-                }, 2000);
-            } catch (error) {
-                console.error('Error saving user data:', error);
-                toast.error('Failed to complete account setup. Tap to retry.');
-                // Stay on this screen to let the user retry
-                setLoading(false);
+                token = await getToken();
+                console.log("Token available:", !!token);
+                if (token) {
+                    console.log("Token first 20 chars:", token.substring(0, 20) + "...");
+                }
+            } catch (e) {
+                console.log("Token error:", e);
             }
-        };
 
-        saveUserData();
-    }, [storeUser, retrying, userId, clerkUser, isLoaded]);
+            // Use Clerk userId or generate a fallback
+            const userIdToUse = userId || storeUser?.id || `user_${Math.random().toString(36).substring(2, 15)}`;
+
+            console.log("Using user ID:", userIdToUse);
+            console.log("User data from store:", storeUser);
+
+            // Prepare user data with fallbacks
+            const userData = {
+                id: userIdToUse,
+                email: storeUser?.email || '',
+                firstName: storeUser?.firstName || '',
+                lastName: storeUser?.lastName || '',
+                fullName: storeUser?.fullName || '',
+                username: storeUser?.username || `user_${Math.random().toString(36).substring(2, 7)}`,
+                profileImage: storeUser?.profileImage || '',
+                gender: storeUser?.gender || '',
+                dateOfBirth: storeUser?.dateOfBirth || '',
+                country: storeUser?.country || '',
+                createdAt: storeUser?.createdAt || new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                // Add clerk-specific fields directly to the user object
+                clerkId: clerkUser?.id || null,
+                clerkImageUrl: clerkUser?.imageUrl || null,
+            };
+
+            console.log("Final user data to save:", userData);
+
+            // Save user data to Firestore
+            await setDoc(doc(db, 'users', userIdToUse), userData);
+            console.log("User data saved successfully to Firestore");
+
+            // Show success message
+            toast.success('Account setup complete!');
+
+            // Navigate to home screen after a brief delay
+            setTimeout(() => {
+                router.push('/(home)/home');
+            }, 2000);
+        } catch (error) {
+            console.error('Error saving user data:', error);
+            toast.error('Failed to complete account setup. Tap to retry.');
+            setLoading(false);
+        }
+    };
 
     // Handle retry
     const handleRetry = () => {
         setLoading(true);
-        setRetrying(!retrying); // Toggle to trigger useEffect
+        setRetrying(!retrying);
+        console.log("Retry triggered, retrying state:", !retrying);
     };
 
     // Get first name or username to display

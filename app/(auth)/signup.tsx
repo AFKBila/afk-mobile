@@ -13,8 +13,9 @@ import { handleAuthResult } from '@/utils/authHelpers'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
 import MainContainer from '@/common/MainContainer'
 
-function Login() {
+function Signup() {
     useWarmUpBrowser();
+    const currentStep = 0;
     const [loading, setLoading] = useState(false);
     const [provider, setProvider] = useState<string | null>(null);
 
@@ -44,30 +45,42 @@ function Login() {
                     throw new Error(`Unsupported provider: ${providerName}`);
             }
 
-            handleAuthResult(result, false);
+            handleAuthResult(result, true);
         } catch (error) {
-            console.error(`Login failed:`, error);
-            toast.error(`Failed to login with ${providerName}`);
+            console.error(`Signup failed:`, error);
+            toast.error(`Failed to sign up with ${providerName}`);
         } finally {
             setLoading(false);
         }
     }
 
+    const signInWithGoogle = async () => {
+        try {
+            const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+            const result = await startOAuthFlow();
+            console.log("Google OAuth result:", JSON.stringify(result, null, 2));
+            return result;
+        } catch (err) {
+            console.error("Google OAuth error:", err);
+            throw err;
+        }
+    };
+
     return (
         <MainContainer style={{ backgroundColor: Colors.primary }}>
             <AuthContainer
-                totalSteps={1}
-                currentStep={0}
+                totalSteps={4}
+                currentStep={currentStep}
             >
-                <AuthHeader title="Log In" imageSource={require('@/assets/images/duck.png')} />
+                <AuthHeader title="Sign Up" imageSource={require('@/assets/images/duck.png')} />
 
                 <View style={styles.formContainer}>
-                    <Text style={styles.subtitle}>Welcome back</Text>
+                    <Text style={styles.subtitle}>Create your account</Text>
 
                     {loading ? (
                         <View style={styles.loadingContainer}>
                             <LoadingIndicator
-                                type="dots"
+                                type="pulse"
                                 message={`Signing in with ${provider}...`}
                             />
                         </View>
@@ -101,7 +114,7 @@ function Login() {
     )
 }
 
-export default Login
+export default Signup
 
 const styles = StyleSheet.create({
     formContainer: {

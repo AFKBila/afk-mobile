@@ -7,13 +7,19 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/afrokabila-logo.png",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#0d0d0d"
+    },
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/afrokabila-logo.png",
         "backgroundColor": "#ffffff"
       }
     },

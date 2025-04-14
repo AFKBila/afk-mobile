@@ -8,6 +8,8 @@ import { useAuthStore } from '@/store/useAuthStore'
 import CountryToggle from '@/components/auth/CountryToggle'
 import AuthContainer from '@/components/auth/AuthContainer'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
+import MainContainer from '@/common/MainContainer'
+
 
 const countries = [
     'Kenya',
@@ -69,36 +71,38 @@ const Country = () => {
     };
 
     return (
-        <AuthContainer
-            totalSteps={4}
-            currentStep={currentStep}
-        >
-            <AuthHeader title="Country" imageSource={require('@/assets/images/globe.png')} />
+        <MainContainer style={{ backgroundColor: Colors.primary }}>
+            <AuthContainer
+                totalSteps={4}
+                currentStep={currentStep}
+            >
+                <AuthHeader title="Country" imageSource={require('@/assets/images/globe.png')} />
 
-            <View style={styles.container}>
-                <Text style={styles.subtitle}>What's your nationality?</Text>
+                <View style={styles.container}>
+                    <Text style={styles.subtitle}>What's your nationality?</Text>
 
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <LoadingIndicator
-                            type="dots"
-                            message="Setting up your account..."
-                        />
-                    </View>
-                ) : (
-                    <ScrollView style={styles.countriesContainer} showsVerticalScrollIndicator={false}>
-                        {countries.map((country, index) => (
-                            <CountryToggle
-                                key={index}
-                                country={country}
-                                isSelected={selectedCountry === country}
-                                onSelect={() => handleCountrySelect(country)}
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <LoadingIndicator
+                                type="dots"
+                                message="Setting up your account..."
                             />
-                        ))}
-                    </ScrollView>
-                )}
-            </View>
-        </AuthContainer>
+                        </View>
+                    ) : (
+                        <ScrollView style={styles.countriesContainer} showsVerticalScrollIndicator={false}>
+                            {countries.map((country, index) => (
+                                <CountryToggle
+                                    key={index}
+                                    country={country}
+                                    isSelected={selectedCountry === country}
+                                    onSelect={() => handleCountrySelect(country)}
+                                />
+                            ))}
+                        </ScrollView>
+                    )}
+                </View>
+            </AuthContainer>
+        </MainContainer>
     )
 }
 

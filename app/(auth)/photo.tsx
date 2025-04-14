@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import AuthContainer from '@/components/auth/AuthContainer'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
 import { toast } from 'sonner-native'
+import MainContainer from '@/common/MainContainer'
 
 const Photo = () => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -98,44 +99,46 @@ const Photo = () => {
     };
 
     return (
-        <AuthContainer
-            totalSteps={4}
-            currentStep={currentStep}
-        >
-            <AuthHeader title="Photo" imageSource={require('@/assets/images/photo.png')} />
+        <MainContainer style={{ backgroundColor: Colors.primary }}>
+            <AuthContainer
+                totalSteps={4}
+                currentStep={currentStep}
+            >
+                <AuthHeader title="Photo" imageSource={require('@/assets/images/photo.png')} />
 
-            <View style={styles.container}>
-                <Text style={styles.subtitle}>Add your profile picture</Text>
+                <View style={styles.container}>
+                    <Text style={styles.subtitle}>Add your profile picture</Text>
 
-                <TouchableOpacity
-                    style={styles.photoContainer}
-                    onPress={pickImage}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <View style={styles.loadingContainer}>
-                            <LoadingIndicator
-                                type="pulse"
-                                message="Processing your photo..."
+                    <TouchableOpacity
+                        style={styles.photoContainer}
+                        onPress={pickImage}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <View style={styles.loadingContainer}>
+                                <LoadingIndicator
+                                    type="pulse"
+                                    message="Processing your photo..."
+                                />
+                            </View>
+                        ) : profileImage ? (
+                            <Image
+                                source={{ uri: profileImage }}
+                                style={styles.profileImage}
                             />
-                        </View>
-                    ) : profileImage ? (
-                        <Image
-                            source={{ uri: profileImage }}
-                            style={styles.profileImage}
-                        />
-                    ) : (
-                        <MaterialIcons name="add" size={30} color={Colors.white} />
-                    )}
-                </TouchableOpacity>
+                        ) : (
+                            <MaterialIcons name="add" size={30} color={Colors.white} />
+                        )}
+                    </TouchableOpacity>
 
-                {profileImage && (
-                    <Text style={styles.processingText}>
-                        Processing your photo...
-                    </Text>
-                )}
-            </View>
-        </AuthContainer>
+                    {profileImage && (
+                        <Text style={styles.processingText}>
+                            Processing your photo...
+                        </Text>
+                    )}
+                </View>
+            </AuthContainer>
+        </MainContainer>
     )
 }
 

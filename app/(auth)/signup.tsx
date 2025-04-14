@@ -11,6 +11,7 @@ import { useWarmUpBrowser } from '@/utils/useWarmUpBrowser'
 import { toast } from 'sonner-native'
 import { handleAuthResult } from '@/utils/authHelpers'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
+import MainContainer from '@/common/MainContainer'
 
 function Signup() {
     useWarmUpBrowser();
@@ -66,48 +67,50 @@ function Signup() {
     };
 
     return (
-        <AuthContainer
-            totalSteps={4}
-            currentStep={currentStep}
-        >
-            <AuthHeader title="Sign Up" imageSource={require('@/assets/images/duck.png')} />
+        <MainContainer style={{ backgroundColor: Colors.primary }}>
+            <AuthContainer
+                totalSteps={4}
+                currentStep={currentStep}
+            >
+                <AuthHeader title="Sign Up" imageSource={require('@/assets/images/duck.png')} />
 
-            <View style={styles.formContainer}>
-                <Text style={styles.subtitle}>Create your account</Text>
+                <View style={styles.formContainer}>
+                    <Text style={styles.subtitle}>Create your account</Text>
 
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <LoadingIndicator
-                            type="pulse"
-                            message={`Signing in with ${provider}...`}
-                        />
-                    </View>
-                ) : (
-                    <View style={styles.socialButtonsContainer}>
-                        <CustomLoginButton
-                            title="Twitter"
-                            onPress={() => handleSocialLogin('Twitter')}
-                            variant="primary"
-                            style={styles.socialButton}
-                        />
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <LoadingIndicator
+                                type="pulse"
+                                message={`Signing in with ${provider}...`}
+                            />
+                        </View>
+                    ) : (
+                        <View style={styles.socialButtonsContainer}>
+                            <CustomLoginButton
+                                title="Twitter"
+                                onPress={() => handleSocialLogin('Twitter')}
+                                variant="primary"
+                                style={styles.socialButton}
+                            />
 
-                        <CustomLoginButton
-                            title="Apple"
-                            onPress={() => handleSocialLogin('Apple')}
-                            variant="primary"
-                            style={styles.socialButton}
-                        />
+                            <CustomLoginButton
+                                title="Apple"
+                                onPress={() => handleSocialLogin('Apple')}
+                                variant="primary"
+                                style={styles.socialButton}
+                            />
 
-                        <CustomLoginButton
-                            title="Google"
-                            onPress={() => handleSocialLogin('Google')}
-                            variant="primary"
-                            style={styles.socialButton}
-                        />
-                    </View>
-                )}
-            </View>
-        </AuthContainer>
+                            <CustomLoginButton
+                                title="Google"
+                                onPress={() => handleSocialLogin('Google')}
+                                variant="primary"
+                                style={styles.socialButton}
+                            />
+                        </View>
+                    )}
+                </View>
+            </AuthContainer>
+        </MainContainer>
     )
 }
 

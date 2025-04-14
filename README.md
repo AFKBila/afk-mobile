@@ -1,6 +1,6 @@
-# 📱 AFK Social Media App
+# 📱 Afrokabila Social App
 
-A modern social media application combining features from Threads and Instagram, built with React Native, Expo, and Firebase.
+A modern social media application focused on cultural connections, built with React Native, Expo, and Clerk Authentication.
 
 ## 🚀 Getting Started
 
@@ -31,111 +31,79 @@ A modern social media application combining features from Threads and Instagram,
 ### 📂 Directory Structure
 
 - `/app` - Expo Router screens and navigation
+  - `/(auth)` - Authentication flows
+  - `/(home)` - Main app screens
+  - `/(tabs)` - Bottom tab navigation
 - `/components` - Reusable UI components
-- `/config` - Configuration files (Firebase, etc.)
-- `/constants` - App constants (Colors, Fonts, etc.)
-- `/hooks` - Custom React hooks
-- `/services` - API and service integrations
+- `/common` - Shared UI elements
+- `/constants` - App constants (Colors, Fonts)
 - `/store` - Zustand state management
+- `/utils` - Helper functions
 - `/assets` - Images, fonts, and other static assets
 
-### 🔥 Firebase Integration
+### 🔐 Authentication
 
-The app uses Firebase for:
+The app uses Clerk for:
 
-- Authentication
-- Firestore Database
-- Storage
-- Analytics
+- Social Authentication (Google, Apple, Twitter)
+- User Management
+- Session Handling
+- Profile Management
 
 ### 🧩 State Management
 
-We use Zustand for state management with modular stores:
+Zustand stores:
 
 - `useAuthStore` - Authentication and user data
-- `useSocialStore` - Follow/follower relationships
-- `useFeedStore` - Post feed management
-- `useStoryStore` - Story content management
-- `useNotificationStore` - Notifications and preferences
-- `useUIStore` - UI state (theme, modals, etc.)
-- `usePrivacyStore` - Privacy settings
-- `useAppStore` - App-level state
+- Additional stores as needed
 
-## 🎨 UI/UX
+## 🎨 UI/UX Features
 
-- Custom theming with light/dark mode support
-- Consistent typography with the Fonts system
-- Standardized color palette
+- Dark theme with custom color palette
+- Custom font integration (GopherText)
+- Bottom tab navigation with:
+  - Home tab
+  - Explore tab
+  - Profile tab with user avatar
+- Custom headers with logo and action buttons
 
-## 📱 Features
+## 📱 Core Features
 
-- User authentication
-- Feed posts and stories
-- Follow/unfollow functionality
-- Notifications
-- Privacy controls
-- Deep linking
+- Social authentication
+- Profile setup flow
+- Explore feed
+- Favorites system
+- User profiles
 
 ## 🧪 Development
 
 ### Prerequisites
 
-- Node.js 16+
+- Node.js
 - Expo CLI
+- Clerk account and API keys
 - iOS Simulator or Android Emulator (optional)
 
-### Useful Commands
+### Environment Setup
 
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
+1. Create a `.env` file with your Clerk keys:
+   ```
+   EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key_here
    ```
 
-2. Start the app
+### Tech Stack
 
-   ```bash
-    npx expo start
-   ```
+- Expo SDK 52
+- React Native 0.76
+- Clerk Authentication
+- Expo Router v4
+- React Navigation v7
+- Zustand for State Management
 
-In the output, you'll find options to open the app in a
+## 📚 Additional Resources
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Clerk Documentation](https://clerk.com/docs)
+- [Expo Router Documentation](https://docs.expo.dev/router/introduction)
 
 ```bash
 # Lint code

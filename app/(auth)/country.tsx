@@ -22,7 +22,7 @@ const Country = () => {
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const currentStep = 3;
-    const { user, setUser } = useAuthStore();
+    const { updateUser } = useAuthStore();
 
     // Auto-navigate after country is selected
     useEffect(() => {
@@ -37,14 +37,17 @@ const Country = () => {
 
     const handleCountrySelect = (country: string) => {
         setSelectedCountry(country);
+        setLoading(true);
 
-        // Update user in store
-        if (user) {
-            setUser({
-                ...user,
-                nationality: country
-            });
-        }
+        // Update the store with the country
+        updateUser({
+            country,
+        });
+
+        // Wait briefly to show the selection
+        setTimeout(() => {
+            router.push('/(auth)/final-signup');
+        }, 1000);
     };
 
     const handleContinue = async () => {

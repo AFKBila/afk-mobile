@@ -14,8 +14,9 @@ import {
 
 type FontWeight = "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
 
-interface CustomLoginButtonProps {
-    title: string | JSX.Element;
+export interface CustomLoginButtonProps {
+    title?: string | JSX.Element;
+    text?: string;
     onPress: () => void;
     style?: ViewStyle;
     textStyle?: TextStyle;
@@ -29,6 +30,7 @@ interface CustomLoginButtonProps {
 
 const CustomLoginButton: React.FC<CustomLoginButtonProps> = ({
     title,
+    text,
     onPress,
     style,
     textStyle,
@@ -40,6 +42,8 @@ const CustomLoginButton: React.FC<CustomLoginButtonProps> = ({
     variant = 'primary',
     ...props
 }) => {
+    const buttonText = text || title;
+
     const buttonStyles = [
         styles.button,
         variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
@@ -82,10 +86,10 @@ const CustomLoginButton: React.FC<CustomLoginButtonProps> = ({
                         <View style={styles.icon}>{icon as React.ReactNode}</View>
                     ) : null}
 
-                    {typeof title === 'string' ? (
-                        <Text style={buttonTextStyles}>{title}</Text>
+                    {typeof buttonText === 'string' ? (
+                        <Text style={buttonTextStyles}>{buttonText}</Text>
                     ) : (
-                        title
+                        buttonText
                     )}
                 </View>
             )}

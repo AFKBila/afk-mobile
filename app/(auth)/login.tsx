@@ -20,7 +20,7 @@ function Login() {
     // Set up OAuth for each provider
     const { startOAuthFlow: startGoogleFlow } = useOAuth({ strategy: "oauth_google" });
     const { startOAuthFlow: startAppleFlow } = useOAuth({ strategy: "oauth_apple" });
-    const { startOAuthFlow: startTwitterFlow } = useOAuth({ strategy: "oauth_twitter" });
+    const { startOAuthFlow: startTwitterFlow } = useOAuth({ strategy: "oauth_x" });
 
     const handleSocialLogin = async (providerName: string) => {
         setProvider(providerName);

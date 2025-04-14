@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { MaterialIcons } from '@expo/vector-icons'
 import AuthContainer from '@/components/auth/AuthContainer'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
+import { toast } from 'sonner-native'
 
 const Photo = () => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -68,6 +69,29 @@ const Photo = () => {
             router.push('/(auth)/country');
         } catch (error) {
             console.error('Navigation failed:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleImageSelected = async (uri: string) => {
+        setProfileImage(uri);
+        setLoading(true);
+
+        try {
+            // Update the store with the profile image
+            const { updateUser } = useAuthStore();
+            updateUser({
+                profileImage: uri,
+            });
+
+            // Wait briefly to show the selected image
+            setTimeout(() => {
+                router.push('/(auth)/country');
+            }, 2000);
+        } catch (error) {
+            console.error('Error processing image:', error);
+            toast.error('Failed to process image');
         } finally {
             setLoading(false);
         }

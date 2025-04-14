@@ -3,48 +3,41 @@ import { auth } from "@/config/firebase";
 import { signOut } from "firebase/auth";
 
 // Define the User interface
-interface User {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  profileImage: string;
-  dob: string;
-  gender: string;
-  country: string;
-  nationality: string;
-  isVerified: boolean;
+export interface UserProfile {
+  id?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  name?: string;
+  username?: string;
+  profileImage?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  dob?: string;
+  country?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  // Add any other fields you need
 }
 
 // Define the store state interface
 interface AuthState {
+  user: UserProfile | null;
   isAuthenticated: boolean;
-  user: User | null;
-  setUser: (user: User) => void;
-  logout: () => Promise<void>;
+  setUser: (user: UserProfile | null) => void;
+  updateUser: (userData: Partial<UserProfile>) => void;
+  clearUser: () => void;
 }
 
 // Create the auth store
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
   user: null,
-
-  setUser: (user: User) => {
-    set({
-      user,
-      isAuthenticated: true,
-    });
-  },
-
-  logout: async () => {
-    try {
-      await signOut(auth);
-      set({
-        user: null,
-        isAuthenticated: false,
-      });
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  },
+  isAuthenticated: false,
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  updateUser: (userData) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, ...userData } : userData,
+    })),
+  clearUser: () => set({ user: null, isAuthenticated: false }),
 }));

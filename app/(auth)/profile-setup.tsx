@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import AuthHeader from '@/components/auth/AuthHeader'
 import { Colors } from '@/constants/Colors'
@@ -12,6 +12,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import AuthContainer from '@/components/auth/AuthContainer'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
+import MainContainer from '@/common/MainContainer'
 
 type Gender = 'male' | 'female' | 'other' | null;
 
@@ -26,8 +27,8 @@ const ProfileSetup = () => {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-    // Get setUser from auth store
-    const { setUser } = useAuthStore();
+    // Get updateUser from auth store
+    const { updateUser } = useAuthStore();
 
     const currentStep = 1; // Second step in the flow
 
@@ -43,6 +44,9 @@ const ProfileSetup = () => {
         setDate(selectedDate);
         setDob(format(selectedDate, 'yyyy-MM-dd'));
         hideDatePicker();
+
+        // Auto-submit when all fields are filled
+        validateAndProceed();
     };
 
     const validateForm = () => {
@@ -57,113 +61,103 @@ const ProfileSetup = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async () => {
-        if (!validateForm()) return;
+    const validateAndProceed = () => {
+        // Only proceed if all fields are filled
+        if (!name || !username || !gender || !dob) {
+            return;
+        }
 
         setLoading(true);
 
-        try {
-            // Update user in auth store
-            setUser({
-                id: 'temp-id', // This would come from your auth provider
-                name,
-                username,
-                email: '', // This would come from your auth provider
-                profileImage: '',
-                dob,
-                gender: gender as string,
-                country: '',
-                nationality: '',
-                isVerified: false
-            });
+        // Update user data in store
+        updateUser({
+            fullName: name,
+            username,
+            gender: gender as string,
+            dateOfBirth: dob,
+        });
 
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
+        // Simulate API call delay
+        setTimeout(() => {
             // Navigate to next screen
             router.push('/(auth)/photo');
-        } catch (error) {
-            console.error('Profile setup failed:', error);
-            // Handle error
-        } finally {
             setLoading(false);
-        }
+        }, 1500);
     };
 
+    // Auto-check for form completion whenever any field changes
+    React.useEffect(() => {
+        if (name && username && gender && dob) {
+            validateAndProceed();
+        }
+    }, [name, username, gender, dob]);
+
     return (
-        <AuthContainer
-            totalSteps={4}
-            currentStep={currentStep}
-        >
-            <AuthHeader title="Profile" imageSource={require('@/assets/images/musk.png')} />
+        <MainContainer style={{ backgroundColor: Colors.primary }}>
+            <AuthContainer
+                totalSteps={4}
+                currentStep={currentStep}
+            >
+                <AuthHeader title="Profile" imageSource={require('@/assets/images/mask.png')} />
 
-            <View style={styles.formContainer}>
-                <Text style={styles.subtitle}>Tell us about yourself</Text>
+                <View style={styles.formContainer}>
+                    <Text style={styles.subtitle}>Tell us about yourself</Text>
 
-                <ProfileInput
-                    label="Name"
-                    value={name}
-                    onChangeText={setName}
-                    error={errors.name}
-                />
-
-                <ProfileInput
-                    label="Username"
-                    value={username}
-                    onChangeText={setUsername}
-                    error={errors.username}
-                />
-
-                <GenderToggle
-                    selectedGender={gender}
-                    onSelectGender={setGender}
-                />
-                {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
-
-                <TouchableOpacity
-                    style={styles.dateContainer}
-                    onPress={showDatePicker}
-                >
-                    <Text style={styles.dateLabel}>Date of birth</Text>
-                    {dob ? (
-                        <Text style={styles.dateValue}>{format(new Date(dob), 'MMM dd, yyyy')}</Text>
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <LoadingIndicator
+                                type="dots"
+                                message="Setting up your profile..."
+                            />
+                        </View>
                     ) : (
-                        <MaterialIcons name="add" size={24} color={Colors.white} />
+                        <>
+                            <ProfileInput
+                                label="Name"
+                                value={name}
+                                onChangeText={setName}
+                                error={errors.name}
+                            />
+
+                            <ProfileInput
+                                label="Username"
+                                value={username}
+                                onChangeText={setUsername}
+                                error={errors.username}
+                            />
+
+                            <GenderToggle
+                                selectedGender={gender}
+                                onSelectGender={setGender}
+                            />
+                            {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
+
+                            <TouchableOpacity
+                                style={styles.dateContainer}
+                                onPress={showDatePicker}
+                            >
+                                <Text style={styles.dateLabel}>Date of birth</Text>
+                                {dob ? (
+                                    <Text style={styles.dateValue}>{format(new Date(dob), 'MMM dd, yyyy')}</Text>
+                                ) : (
+                                    <MaterialIcons name="add" size={24} color={Colors.white} />
+                                )}
+                            </TouchableOpacity>
+                            {errors.dob ? <Text style={styles.errorText}>{errors.dob}</Text> : null}
+
+                            <DateTimePickerModal
+                                isVisible={isDatePickerVisible}
+                                mode="date"
+                                onConfirm={handleConfirm}
+                                onCancel={hideDatePicker}
+                                maximumDate={new Date()}
+                                date={date || new Date(2000, 0, 1)}
+                            />
+                        </>
                     )}
-                </TouchableOpacity>
-                {errors.dob ? <Text style={styles.errorText}>{errors.dob}</Text> : null}
-
-                <DateTimePickerModal
-                    isVisible={isDatePickerVisible}
-                    mode="date"
-                    onConfirm={handleConfirm}
-                    onCancel={hideDatePicker}
-                    maximumDate={new Date()}
-                    date={date || new Date(2000, 0, 1)}
-                />
-
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <LoadingIndicator
-                            type="spinner"
-                            message="Saving your profile..."
-                        />
-                    </View>
-                ) : (
-                    <TouchableOpacity
-                        style={styles.continueButton}
-                        onPress={handleSubmit}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color={Colors.white} />
-                        ) : (
-                            <Text style={styles.continueButtonText}>Continue</Text>
-                        )}
-                    </TouchableOpacity>
-                )}
-            </View>
-        </AuthContainer>
+                </View>
+            </AuthContainer>
+        </MainContainer>
     )
 }
 
@@ -204,21 +198,10 @@ const styles = StyleSheet.create({
         marginTop: 5,
         fontSize: Fonts.sizes.sm,
     },
-    continueButton: {
-        backgroundColor: Colors.secondary,
-        paddingVertical: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 40,
-    },
-    continueButtonText: {
-        color: Colors.white,
-        fontSize: Fonts.sizes.md,
-        fontWeight: 'bold',
-    },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 50,
     },
 });

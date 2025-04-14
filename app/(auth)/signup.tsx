@@ -21,7 +21,7 @@ function Signup() {
     // Set up OAuth for each provider
     const { startOAuthFlow: startGoogleFlow } = useOAuth({ strategy: "oauth_google" });
     const { startOAuthFlow: startAppleFlow } = useOAuth({ strategy: "oauth_apple" });
-    const { startOAuthFlow: startTwitterFlow } = useOAuth({ strategy: "oauth_twitter" });
+    const { startOAuthFlow: startTwitterFlow } = useOAuth({ strategy: "oauth_x" });
 
     const handleSocialLogin = async (providerName: string) => {
         setProvider(providerName);
@@ -52,6 +52,18 @@ function Signup() {
             setLoading(false);
         }
     }
+
+    const signInWithGoogle = async () => {
+        try {
+            const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+            const result = await startOAuthFlow();
+            console.log("Google OAuth result:", JSON.stringify(result, null, 2));
+            return result;
+        } catch (err) {
+            console.error("Google OAuth error:", err);
+            throw err;
+        }
+    };
 
     return (
         <AuthContainer

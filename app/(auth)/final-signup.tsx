@@ -112,7 +112,7 @@ const FinalSignup = () => {
 
             // Navigate to home screen after a brief delay
             setTimeout(() => {
-                router.push('/(home)/home');
+                router.push('/(home)/(tabs)/explore');
             }, 2000);
         } catch (error) {
             console.error('Error saving user data:', error);

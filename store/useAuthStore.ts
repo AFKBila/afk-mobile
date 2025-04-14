@@ -18,6 +18,8 @@ export interface UserProfile {
   country?: string;
   createdAt?: string;
   updatedAt?: string;
+  clerkId?: string;
+  clerkData?: any;
   // Add any other fields you need
 }
 

@@ -57,11 +57,21 @@ export const handleAuthResult = (
 
     if (isNewUser) {
       toast.success("Account created successfully!");
-      router.push("/(auth)/profile-setup");
+
+      // Add a small delay before navigation to ensure routes are registered
+      setTimeout(() => {
+        router.push("/(auth)/profile-setup");
+      }, 300);
+
       return true;
     } else {
       toast.success(isSignUp ? "Welcome to AfroKabila!" : "Welcome back!");
-      router.push("/(home)/home");
+
+      // Add a small delay before navigation
+      setTimeout(() => {
+        router.push("/(home)/(tabs)/explore");
+      }, 300);
+
       return true;
     }
   }
@@ -74,7 +84,7 @@ export const handleAuthResult = (
     toast.success(
       isSignUp ? "Account created successfully!" : "Authentication successful!"
     );
-    router.push(isSignUp ? "/(auth)/profile-setup" : "/(home)/home");
+    router.push(isSignUp ? "/(auth)/profile-setup" : "/(home)/(tabs)/explore");
     return true;
   }
   // Handle other statuses

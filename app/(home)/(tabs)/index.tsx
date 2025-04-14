@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native'
+import { Button, StyleSheet, Text, View, TouchableOpacity, Alert, Image } from 'react-native'
 import React, { useState } from 'react'
 import MainContainer from '@/common/MainContainer'
 import { useAuth } from '@clerk/clerk-expo'
@@ -7,6 +7,33 @@ import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
 import { Ionicons } from '@expo/vector-icons'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
+
+// Header component for the app
+const AppHeader = () => {
+    const handleFavoritePress = () => {
+        router.push('/(home)/favourite');
+    };
+
+    const handleLikesPress = () => {
+        // Handle likes press
+    };
+
+    return (
+        <View style={styles.headerContainer}>
+            <Text style={styles.logoText}>AFROKABILA</Text>
+            <View style={styles.headerIcons}>
+                <TouchableOpacity style={styles.iconButton} onPress={handleFavoritePress}>
+                    <View style={styles.badgeContainer}>
+                        <Ionicons name="star-outline" size={18} color={Colors.white} />
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton} onPress={handleLikesPress}>
+                    <Ionicons name="heart-outline" size={24} color={Colors.white} />
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+};
 
 function Home() {
     const { signOut, isLoaded } = useAuth();
@@ -59,9 +86,7 @@ function Home() {
 
     return (
         <MainContainer style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Home</Text>
-            </View>
+            <AppHeader />
 
             <View style={styles.content}>
                 <Text style={styles.welcomeText}>Welcome to Afrokabila</Text>
@@ -90,21 +115,44 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.black,
-        padding: 20,
+        padding: 0, // Remove padding to allow header to extend full width
     },
-    header: {
-        marginTop: 40,
-        marginBottom: 30,
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        backgroundColor: Colors.black,
+        width: '100%',
     },
-    headerText: {
-        fontSize: Fonts.sizes.xl,
-        fontWeight: Fonts.weights.bold as any,
+    logoText: {
         color: Colors.white,
+        fontSize: Fonts.sizes.lg,
+        fontWeight: Fonts.weights.bold as any,
+        letterSpacing: 1,
+    },
+    headerIcons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    iconButton: {
+        marginLeft: 20,
+    },
+    badgeContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: Colors.white,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     content: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingHorizontal: 20,
     },
     welcomeText: {
         fontSize: Fonts.sizes.lg,
@@ -114,7 +162,7 @@ const styles = StyleSheet.create({
     },
     subText: {
         fontSize: Fonts.sizes.md,
-        color: Colors.lightGray,
+        color: Colors.grey,
     },
     signOutButton: {
         backgroundColor: Colors.primary,
@@ -124,6 +172,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
+        marginHorizontal: 20,
     },
     signOutText: {
         color: Colors.white,

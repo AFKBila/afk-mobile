@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useOAuth, useAuth } from "@clerk/clerk-expo";
+import { useOAuth, useAuth, useUser } from "@clerk/clerk-expo";
 import { router } from 'expo-router';
 import { toast } from 'sonner-native';
 import CustomLoginButton from './CustomLoginButton';
@@ -13,8 +13,9 @@ interface SocialAuthProps {
 export default function SocialAuth({ isSignUp = false }: SocialAuthProps) {
     const [loading, setLoading] = useState(false);
     const [provider, setProvider] = useState('');
-    const { updateUser } = useAuthStore();
+    const { updateUser, user: storeUser } = useAuthStore();
     const { signOut } = useAuth();
+    const { user } = useUser();
 
     const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" });
     const { startOAuthFlow: appleAuth } = useOAuth({ strategy: "oauth_apple" });
@@ -28,29 +29,58 @@ export default function SocialAuth({ isSignUp = false }: SocialAuthProps) {
             // First try to sign out any existing session
             try {
                 await signOut();
-                console.log("Signed out existing session");
             } catch (e) {
                 console.log("No session to sign out or sign out failed");
             }
 
-            // Now try to sign in with Google
             const { createdSessionId, setActive } = await googleAuth();
-            console.log("Google OAuth result:", { createdSessionId });
 
             if (createdSessionId && setActive) {
-                // Activate the session
                 await setActive({ session: createdSessionId });
 
-                // Navigate based on sign up or sign in
-                if (isSignUp) {
-                    toast.success("Account created successfully!");
+                // Wait a moment for the session to be fully active
+                setTimeout(async () => {
+                    // Get the user data after authentication
+                    if (user) {
+                        console.log("📋 Clerk data available:", {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl
+                        });
+
+                        // Create a complete clerk data object
+                        const clerkData = {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl,
+                            username: user.username,
+                            email: user.primaryEmailAddress?.emailAddress,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                        };
+
+                        console.log("📋 Storing clerk data in auth store");
+
+                        // Store the Clerk user data in your auth store
+                        updateUser({
+                            ...storeUser,
+                            clerkId: user.id,
+                            firstName: user.firstName || storeUser?.firstName,
+                            lastName: user.lastName || storeUser?.lastName,
+                            profileImage: user.imageUrl || storeUser?.profileImage,
+                            clerkData: clerkData
+                        } as any);
+
+                        console.log("✅ Clerk data stored successfully");
+                    } else {
+                        console.log("❌ Clerk user data not available");
+                    }
+
+                    // Continue with your flow
                     router.push("/(auth)/profile-setup");
-                } else {
-                    toast.success("Welcome back!");
-                    router.push("/(home)/home");
-                }
-            } else {
-                toast.error("Authentication failed");
+                }, 1000);
             }
         } catch (error) {
             console.error("Google OAuth error:", error);
@@ -75,20 +105,60 @@ export default function SocialAuth({ isSignUp = false }: SocialAuthProps) {
 
             // Now try to sign in with Apple
             const { createdSessionId, setActive } = await appleAuth();
-            console.log("Apple OAuth result:", { createdSessionId });
 
             if (createdSessionId && setActive) {
                 // Activate the session
                 await setActive({ session: createdSessionId });
 
-                // Navigate based on sign up or sign in
-                if (isSignUp) {
-                    toast.success("Account created successfully!");
-                    router.push("/(auth)/profile-setup");
-                } else {
-                    toast.success("Welcome back!");
-                    router.push("/(home)/home");
-                }
+                // Wait a moment for the session to be fully active
+                setTimeout(async () => {
+                    // Get the user data after authentication
+                    if (user) {
+                        console.log("📋 Clerk data available:", {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl
+                        });
+
+                        // Create a complete clerk data object
+                        const clerkData = {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl,
+                            username: user.username,
+                            email: user.primaryEmailAddress?.emailAddress,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                        };
+
+                        console.log("📋 Storing clerk data in auth store");
+
+                        // Store the Clerk user data in your auth store
+                        updateUser({
+                            ...storeUser,
+                            clerkId: user.id,
+                            firstName: user.firstName || storeUser?.firstName,
+                            lastName: user.lastName || storeUser?.lastName,
+                            profileImage: user.imageUrl || storeUser?.profileImage,
+                            clerkData: clerkData
+                        } as any);
+
+                        console.log("✅ Clerk data stored successfully");
+                    } else {
+                        console.log("❌ Clerk user data not available");
+                    }
+
+                    // Navigate based on sign up or sign in
+                    if (isSignUp) {
+                        toast.success("Account created successfully!");
+                        router.push("/(auth)/profile-setup");
+                    } else {
+                        toast.success("Welcome back!");
+                        router.push("/(home)/(tabs)/explore");
+                    }
+                }, 1000);
             } else {
                 toast.error("Authentication failed");
             }
@@ -115,20 +185,60 @@ export default function SocialAuth({ isSignUp = false }: SocialAuthProps) {
 
             // Now try to sign in with Twitter
             const { createdSessionId, setActive } = await twitterAuth();
-            console.log("Twitter OAuth result:", { createdSessionId });
 
             if (createdSessionId && setActive) {
                 // Activate the session
                 await setActive({ session: createdSessionId });
 
-                // Navigate based on sign up or sign in
-                if (isSignUp) {
-                    toast.success("Account created successfully!");
-                    router.push("/(auth)/profile-setup");
-                } else {
-                    toast.success("Welcome back!");
-                    router.push("/(home)/home");
-                }
+                // Wait a moment for the session to be fully active
+                setTimeout(async () => {
+                    // Get the user data after authentication
+                    if (user) {
+                        console.log("📋 Clerk data available:", {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl
+                        });
+
+                        // Create a complete clerk data object
+                        const clerkData = {
+                            id: user.id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl,
+                            username: user.username,
+                            email: user.primaryEmailAddress?.emailAddress,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                        };
+
+                        console.log("📋 Storing clerk data in auth store");
+
+                        // Store the Clerk user data in your auth store
+                        updateUser({
+                            ...storeUser,
+                            clerkId: user.id,
+                            firstName: user.firstName || storeUser?.firstName,
+                            lastName: user.lastName || storeUser?.lastName,
+                            profileImage: user.imageUrl || storeUser?.profileImage,
+                            clerkData: clerkData
+                        } as any);
+
+                        console.log("✅ Clerk data stored successfully");
+                    } else {
+                        console.log("❌ Clerk user data not available");
+                    }
+
+                    // Navigate based on sign up or sign in
+                    if (isSignUp) {
+                        toast.success("Account created successfully!");
+                        router.push("/(auth)/profile-setup");
+                    } else {
+                        toast.success("Welcome back!");
+                        router.push("/(home)/(tabs)/explore");
+                    }
+                }, 1000);
             } else {
                 toast.error("Authentication failed");
             }

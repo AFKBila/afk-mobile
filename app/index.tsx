@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Redirect } from 'expo-router';
 import GetStarted from "./(auth)/get-started";
-import { auth } from "@/config/firebase";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { useAuth, useUser } from "@clerk/clerk-expo";
+import LoadingScreen from "@/components/common/LoadingScreen";
 
 const Page = () => {
-    const [user, setUser] = useState<User | null>(null);
+    const { isLoaded, isSignedIn } = useAuth();
+    const { user } = useUser();
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            console.log("user", user);
-            setUser(user);
-        });
-    }, []);
+    if (!isLoaded) {
+        return <LoadingScreen />;
+    }
 
-    if (user) return <Redirect href="/(auth)/login" />;
+    if (isSignedIn && user) {
+        return <Redirect href="/(home)/(tabs)/explore" />;
+    }
 
-    return (
-        <GetStarted />
-    );
+    return <GetStarted />;
 };
 
 export default Page;

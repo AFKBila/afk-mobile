@@ -20,7 +20,7 @@ export default function TabLayout() {
         <Tabs
             screenOptions={{
                 tabBarStyle: {
-                    backgroundColor: Colors.black,
+                    backgroundColor: Colors.primary,
                     borderTopWidth: 0,
                     height: 60 + (Platform.OS === 'ios' ? insets.bottom : 0),
                     paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
@@ -37,7 +37,8 @@ export default function TabLayout() {
                 name="index"
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <Feather name="home" size={24} color={color} />
+                        // <Feather name="home" size={24} color={color} />
+                        <Image source={require('@/assets/icons/home.jpg')} style={styles.tabIcon} />
                     ),
                 }}
             />
@@ -46,11 +47,7 @@ export default function TabLayout() {
                 name="explore"
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <View style={styles.centerTabContainer}>
-                            <View style={styles.centerTabButton}>
-                                <Feather name="compass" size={28} color={Colors.white} />
-                            </View>
-                        </View>
+                        <Feather name="compass" size={28} color={Colors.white} />
                     ),
                 }}
             />
@@ -83,7 +80,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.primary,
     },
     logoText: {
         color: Colors.white,
@@ -94,6 +91,10 @@ const styles = StyleSheet.create({
     headerIcons: {
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    tabIcon: {
+        width: 24,
+        height: 24,
     },
     iconButton: {
         marginLeft: 20,
@@ -108,20 +109,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     centerTabContainer: {
-        position: 'absolute',
-        bottom: 0,
         alignItems: 'center',
+        justifyContent: 'center',
     },
     centerTabButton: {
-        backgroundColor: Colors.primary,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        justifyContent: 'center',
-        alignItems: 'center',
-        bottom: 5,
-        borderWidth: 2,
-        borderColor: Colors.black,
+        // backgroundColor: Colors.black,
+        // width: 50,
+        // height: 50,
+        // borderRadius: 25,
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // borderWidth: 2,
+        // borderColor: Colors.white,
     },
     avatarContainer: {
         alignItems: 'center',

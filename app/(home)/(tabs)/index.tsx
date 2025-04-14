@@ -20,11 +20,17 @@ const AppHeader = () => {
 
     return (
         <View style={styles.headerContainer}>
-            <Text style={styles.logoText}>AFROKABILA</Text>
+            <View style={styles.logoContainer}>
+                <Image
+                    source={require('@/assets/images/afrokabila-logo.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
+            </View>
             <View style={styles.headerIcons}>
                 <TouchableOpacity style={styles.iconButton} onPress={handleFavoritePress}>
                     <View style={styles.badgeContainer}>
-                        <Ionicons name="star-outline" size={18} color={Colors.white} />
+                        <Image source={require('@/assets/icons/favourite.jpg')} style={styles.starIcon} />
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={handleLikesPress}>
@@ -114,23 +120,26 @@ function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.black,
-        padding: 0, // Remove padding to allow header to extend full width
+        backgroundColor: Colors.primary,
+        padding: 0,
     },
     headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 15,
-        backgroundColor: Colors.black,
+        paddingTop: 40,
+        paddingBottom: 15,
+        backgroundColor: Colors.primary,
         width: '100%',
     },
-    logoText: {
-        color: Colors.white,
-        fontSize: Fonts.sizes.lg,
-        fontWeight: Fonts.weights.bold as any,
-        letterSpacing: 1,
+    logoContainer: {
+        flex: 1,
+        alignItems: 'flex-start',
+    },
+    logo: {
+        width: 150,
+        height: 30,
     },
     headerIcons: {
         flexDirection: 'row',
@@ -142,9 +151,6 @@ const styles = StyleSheet.create({
     badgeContainer: {
         width: 32,
         height: 32,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: Colors.white,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -190,6 +196,10 @@ const styles = StyleSheet.create({
         color: Colors.white,
         marginTop: 10,
         fontSize: Fonts.sizes.md,
+    },
+    starIcon: {
+        width: 20,
+        height: 20,
     }
 })
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,23 +8,16 @@ import { StatusBar } from 'expo-status-bar';
 import { usePrivacyStore } from '@/store/usePrivacyStore';
 
 export default function PrivacySettingsScreen() {
-    const {
-        privacySettings,
-        updatePrivacySettings,
-        blockedProfiles
-    } = usePrivacyStore();
+    const { privacySettings, updatePrivacy, blockedProfiles } = usePrivacyStore();
 
     const toggleSetting = (key: keyof typeof privacySettings) => {
         if (typeof privacySettings[key] === 'boolean') {
-            updatePrivacySettings({
-                ...privacySettings,
-                [key]: !privacySettings[key]
-            });
+            updatePrivacy(key, !privacySettings[key]);
         }
     };
 
-    const navigateToBlockedProfiles = () => {
-        router.push('/(home)/menu/blocked-profiles');
+    const changePrivacyOption = (key: keyof typeof privacySettings, value: string) => {
+        updatePrivacy(key, value);
     };
 
     return (
@@ -39,8 +32,55 @@ export default function PrivacySettingsScreen() {
                 </View>
 
                 <ScrollView style={styles.scrollView}>
+                    {/* Mentions */}
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Account Privacy</Text>
+                        <Text style={styles.sectionTitle}>Mentions</Text>
+                        <TouchableOpacity
+                            style={styles.optionItem}
+                            onPress={() => router.push('/(home)/menu/privacy/mentions')}
+                        >
+                            <Text style={styles.optionText}>
+                                {privacySettings.mentions === 'everyone' ? 'Everyone' :
+                                    privacySettings.mentions === 'following' ? 'Following' :
+                                        privacySettings.mentions === 'none' ? 'None' : 'Review'}
+                            </Text>
+                            <Ionicons name="chevron-forward" size={20} color={Colors.grey} />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Online Status */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Online Status</Text>
+                        <TouchableOpacity
+                            style={styles.optionItem}
+                            onPress={() => router.push('/(home)/menu/privacy/online-status')}
+                        >
+                            <Text style={styles.optionText}>
+                                {privacySettings.onlineStatus === 'everyone' ? 'Everyone' :
+                                    privacySettings.onlineStatus === 'following' ? 'Following' : 'None'}
+                            </Text>
+                            <Ionicons name="chevron-forward" size={20} color={Colors.grey} />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Birthday Visibility */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Birthday Visibility</Text>
+                        <TouchableOpacity
+                            style={styles.optionItem}
+                            onPress={() => router.push('/(home)/menu/privacy/birthday')}
+                        >
+                            <Text style={styles.optionText}>
+                                {privacySettings.birthdayVisibility === 'everyone' ? 'Everyone' :
+                                    privacySettings.birthdayVisibility === 'following' ? 'Following' : 'None'}
+                            </Text>
+                            <Ionicons name="chevron-forward" size={20} color={Colors.grey} />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Hide Followers/Following */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Profile Privacy</Text>
 
                         <View style={styles.settingItem}>
                             <Text style={styles.settingText}>Hide Followers</Text>
@@ -65,9 +105,10 @@ export default function PrivacySettingsScreen() {
                         </View>
                     </View>
 
+                    {/* Blocked Profiles - moved to a sub-option */}
                     <TouchableOpacity
                         style={styles.navigationItem}
-                        onPress={navigateToBlockedProfiles}
+                        onPress={() => router.push('/(home)/menu/privacy/blocked-profiles')}
                     >
                         <Text style={styles.navigationText}>Blocked Profiles</Text>
                         <Text style={styles.countText}>{blockedProfiles.length}</Text>
@@ -120,6 +161,16 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
     },
     settingText: {
+        color: Colors.white,
+        fontSize: Fonts.sizes.md,
+    },
+    optionItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 16,
+    },
+    optionText: {
         color: Colors.white,
         fontSize: Fonts.sizes.md,
     },

@@ -1,17 +1,16 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, BackHandler } from 'react-native';
-import { Stack, router, useNavigation } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, BackHandler } from 'react-native';
+import { router } from 'expo-router';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '@clerk/clerk-expo';
-import { useAuthStore } from '@/store/useAuthStore';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 
 export default function MenuScreen() {
-    const navigation = useNavigation();
     const { signOut } = useAuth();
-    const { user } = useAuthStore();
 
     // Handle back button press
     useEffect(() => {
@@ -33,6 +32,11 @@ export default function MenuScreen() {
         }
     };
 
+    const openHelp = async () => {
+        await WebBrowser.openBrowserAsync('https://fixxies.com');
+    };
+
+    // Updated menu items based on the new requirements
     const menuItems = [
         {
             icon: <Feather name="users" size={24} color={Colors.white} />,
@@ -47,7 +51,7 @@ export default function MenuScreen() {
         {
             icon: <Ionicons name="heart-outline" size={24} color={Colors.white} />,
             label: 'Liked',
-            onPress: () => router.push('/(home)/menu/liked')
+            onPress: () => router.push('/(home)/menu/activity')
         },
         {
             icon: <Ionicons name="bookmark-outline" size={24} color={Colors.white} />,
@@ -65,11 +69,6 @@ export default function MenuScreen() {
             onPress: () => router.push('/(home)/menu/privacy')
         },
         {
-            icon: <Ionicons name="accessibility-outline" size={24} color={Colors.white} />,
-            label: 'Accessibility',
-            onPress: () => router.push('/(home)/menu/accessibility')
-        },
-        {
             icon: <Ionicons name="person-outline" size={24} color={Colors.white} />,
             label: 'Account',
             onPress: () => router.push('/(home)/menu/account')
@@ -80,14 +79,19 @@ export default function MenuScreen() {
             onPress: () => router.push('/(home)/menu/language')
         },
         {
+            icon: <Ionicons name="compass-outline" size={24} color={Colors.white} />,
+            label: 'Interests',
+            onPress: () => router.push('/(home)/menu/interests')
+        },
+        {
             icon: <Ionicons name="help-circle-outline" size={24} color={Colors.white} />,
             label: 'Help',
-            onPress: () => router.push('/(home)/menu/help')
+            onPress: openHelp
         },
         {
             icon: <Ionicons name="information-circle-outline" size={24} color={Colors.white} />,
             label: 'About',
-            onPress: () => router.push('/(home)/menu/about')
+            onPress: () => router.push('/(home)/menu/more/about')
         },
     ];
 
@@ -109,14 +113,19 @@ export default function MenuScreen() {
                             style={styles.menuItem}
                             onPress={item.onPress}
                         >
-                            <View style={styles.iconContainer}>{item.icon}</View>
+                            <View style={styles.iconContainer}>
+                                {item.icon}
+                            </View>
                             <Text style={styles.menuItemText}>{item.label}</Text>
                         </TouchableOpacity>
                     ))}
 
                     <View style={styles.divider} />
 
-                    <TouchableOpacity style={styles.accountSwitchButton}>
+                    <TouchableOpacity
+                        style={styles.accountSwitchButton}
+                        onPress={() => router.push('/(home)/menu/switch-accounts')}
+                    >
                         <Text style={styles.accountSwitchText}>Switch accounts</Text>
                     </TouchableOpacity>
 

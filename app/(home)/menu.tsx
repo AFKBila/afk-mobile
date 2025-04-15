@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, BackHandler } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, BackHandler, Alert, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
@@ -8,9 +8,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '@clerk/clerk-expo';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
+import { showToast } from '@/utils/toast';
 
 export default function MenuScreen() {
     const { signOut } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     // Handle back button press
     useEffect(() => {
@@ -24,16 +26,37 @@ export default function MenuScreen() {
     }, []);
 
     const handleSignOut = async () => {
-        try {
-            await signOut();
-            router.replace("/(auth)/login");
-        } catch (error) {
-            console.error("Error signing out:", error);
-        }
+        Alert.alert(
+            "Sign out of Afrokabila",
+            "Are you sure you want to sign out?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Sign Out",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setLoading(true);
+                            await signOut();
+                            showToast("You have been signed out", "success");
+                            router.replace("/(auth)/login");
+                        } catch (error) {
+                            console.error("Error signing out:", error);
+                            showToast("Failed to sign out. Please try again.", "error");
+                        } finally {
+                            setLoading(false);
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const openHelp = async () => {
-        await WebBrowser.openBrowserAsync('https://fixxies.com');
+        await WebBrowser.openBrowserAsync('https://afrokabila.com');
     };
 
     // Updated menu items based on the new requirements
@@ -127,8 +150,13 @@ export default function MenuScreen() {
                     <TouchableOpacity
                         style={styles.logoutButton}
                         onPress={handleSignOut}
+                        disabled={loading}
                     >
-                        <Text style={styles.logoutText}>Log out</Text>
+                        {loading ? (
+                            <ActivityIndicator color={Colors.error} size="small" />
+                        ) : (
+                            <Text style={styles.logoutText}>Log out</Text>
+                        )}
                     </TouchableOpacity>
                 </ScrollView>
             </View>
@@ -185,7 +213,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
     },
     accountSwitchText: {
-        color: Colors.blue,
+        color: Colors.link,
         fontSize: Fonts.sizes.md,
     },
     logoutButton: {

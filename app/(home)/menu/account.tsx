@@ -1,22 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '@clerk/clerk-expo';
+import { showToast } from "@/utils/toast";
 
 export default function AccountManagementScreen() {
     const { signOut } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const handleSignOut = async () => {
-        try {
-            await signOut();
-            router.replace("/(auth)/login");
-        } catch (error) {
-            console.error("Error signing out:", error);
-        }
+        Alert.alert(
+            "Sign Out",
+            "Are you sure you want to sign out?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Sign Out",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setLoading(true);
+                            await signOut();
+                            showToast("You have been signed out", "success");
+                            router.replace("/(auth)/login");
+                        } catch (error) {
+                            console.error("Error signing out:", error);
+                            showToast("Failed to sign out. Please try again.", "error");
+                        } finally {
+                            setLoading(false);
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const confirmDeactivate = () => {
@@ -96,8 +119,13 @@ export default function AccountManagementScreen() {
                     <TouchableOpacity
                         style={styles.logoutButton}
                         onPress={handleSignOut}
+                        disabled={loading}
                     >
-                        <Text style={styles.logoutText}>Log out</Text>
+                        {loading ? (
+                            <ActivityIndicator color={Colors.white} size="small" />
+                        ) : (
+                            <Text style={styles.logoutText}>Log Out</Text>
+                        )}
                     </TouchableOpacity>
                 </ScrollView>
             </View>

@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "sonner-native";
 import { useToast } from "@/contexts/ToastContext";
 
 // This is a helper function to use outside of React components

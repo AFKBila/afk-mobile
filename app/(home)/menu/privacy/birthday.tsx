@@ -16,7 +16,7 @@ export default function BirthdayPrivacyScreen() {
         { id: 'none', label: 'Only Me' },
     ];
 
-    const handleOptionSelect = (value) => {
+    const handleOptionSelect = (value: any) => {
         updatePrivacy('birthdayVisibility', value);
         router.back();
     };

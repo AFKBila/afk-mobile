@@ -57,13 +57,21 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             {/* Profile Info - Updated Layout */}
             <View style={styles.profileInfo}>
                 <View style={styles.profileRow}>
-                    <Image
+                    {/* <Image
                         source={{ uri: avatar }}
                         style={styles.avatar}
                     />
                     <View style={styles.profileText}>
                         <Text style={styles.name}>{name}</Text>
                         <Text style={styles.location}>{location}</Text>
+                    </View> */}
+                    <Image
+                        source={require('@/assets/images/p-1.jpg')}
+                        style={styles.avatar}
+                    />
+                    <View style={styles.profileText}>
+                        <Text style={styles.name}>{"Chioma Okafor"}</Text>
+                        <Text style={styles.location}>{"Nigeria"}</Text>
                     </View>
                 </View>
                 <Text style={styles.bio}>{bio}</Text>

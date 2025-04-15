@@ -42,44 +42,7 @@ const AppHeader = () => {
 };
 
 function Home() {
-    const { signOut, isLoaded } = useAuth();
-    const [loading, setLoading] = useState(false);
-
-    const handleSignOut = async () => {
-        Alert.alert(
-            "Sign Out",
-            "Are you sure you want to sign out?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Sign Out",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            setLoading(true);
-                            console.log("Signing out...");
-                            await signOut();
-                            console.log("Sign out successful");
-
-                            // Clear any local storage or state if needed
-                            // localStorage.clear();
-
-                            // Redirect to login screen
-                            router.replace("/(auth)/login");
-                        } catch (error) {
-                            console.error("Error signing out:", error);
-                            Alert.alert("Error", "Failed to sign out. Please try again.");
-                        } finally {
-                            setLoading(false);
-                        }
-                    }
-                }
-            ]
-        );
-    };
+    const { isLoaded } = useAuth();
 
     if (!isLoaded) {
         return (
@@ -98,21 +61,6 @@ function Home() {
                 <Text style={styles.welcomeText}>Welcome to Afrokabila</Text>
                 <Text style={styles.subText}>Your account is ready!</Text>
             </View>
-
-            <TouchableOpacity
-                style={styles.signOutButton}
-                onPress={handleSignOut}
-                disabled={loading}
-            >
-                {loading ? (
-                    <LoadingIndicator type="spinner" size="small" />
-                ) : (
-                    <>
-                        <Ionicons name="log-out-outline" size={20} color={Colors.white} />
-                        <Text style={styles.signOutText}>Sign Out</Text>
-                    </>
-                )}
-            </TouchableOpacity>
         </MainContainer>
     )
 }

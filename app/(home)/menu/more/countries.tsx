@@ -6,37 +6,31 @@ import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { StatusBar } from 'expo-status-bar';
 
-export default function LanguageScreen() {
+export default function CountriesScreen() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedLanguage, setSelectedLanguage] = useState('en');
 
-    const languages = [
-        { code: 'en', name: 'English' },
-        { code: 'es', name: 'Spanish' },
-        { code: 'fr', name: 'French' },
-        { code: 'de', name: 'German' },
-        { code: 'it', name: 'Italian' },
-        { code: 'pt', name: 'Portuguese' },
-        { code: 'ru', name: 'Russian' },
-        { code: 'ja', name: 'Japanese' },
-        { code: 'zh', name: 'Chinese' },
-        { code: 'ar', name: 'Arabic' },
-        { code: 'hi', name: 'Hindi' },
-        { code: 'ko', name: 'Korean' },
-        { code: 'tr', name: 'Turkish' },
-        { code: 'nl', name: 'Dutch' },
-        { code: 'sv', name: 'Swedish' },
+    // Sample list of countries
+    const countries = [
+        { code: 'US', name: 'United States' },
+        { code: 'GB', name: 'United Kingdom' },
+        { code: 'CA', name: 'Canada' },
+        { code: 'AU', name: 'Australia' },
+        { code: 'DE', name: 'Germany' },
+        { code: 'FR', name: 'France' },
+        { code: 'JP', name: 'Japan' },
+        { code: 'CN', name: 'China' },
+        { code: 'IN', name: 'India' },
+        { code: 'BR', name: 'Brazil' },
+        { code: 'RU', name: 'Russia' },
+        { code: 'ZA', name: 'South Africa' },
+        { code: 'MX', name: 'Mexico' },
+        { code: 'IT', name: 'Italy' },
+        { code: 'ES', name: 'Spain' },
     ];
 
-    const filteredLanguages = languages.filter(language =>
-        language.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredCountries = countries.filter(country =>
+        country.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    const handleLanguageSelect = (code: string) => {
-        setSelectedLanguage(code);
-        // In a real app, you would update the app's language here
-        router.back();
-    };
 
     return (
         <>
@@ -46,14 +40,14 @@ export default function LanguageScreen() {
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                         <Ionicons name="chevron-back" size={24} color={Colors.white} />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Language</Text>
+                    <Text style={styles.headerTitle}>Countries</Text>
                 </View>
 
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={20} color={Colors.grey} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Search languages"
+                        placeholder="Search countries"
                         placeholderTextColor={Colors.grey}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -61,17 +55,12 @@ export default function LanguageScreen() {
                 </View>
 
                 <FlatList
-                    data={filteredLanguages}
+                    data={filteredCountries}
                     keyExtractor={item => item.code}
                     renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={styles.languageItem}
-                            onPress={() => handleLanguageSelect(item.code)}
-                        >
-                            <Text style={styles.languageName}>{item.name}</Text>
-                            {selectedLanguage === item.code && (
-                                <Ionicons name="checkmark" size={24} color={Colors.primary} />
-                            )}
+                        <TouchableOpacity style={styles.countryItem}>
+                            <Text style={styles.countryName}>{item.name}</Text>
+                            <Ionicons name="chevron-forward" size={20} color={Colors.grey} />
                         </TouchableOpacity>
                     )}
                     contentContainerStyle={styles.listContent}
@@ -123,7 +112,7 @@ const styles = StyleSheet.create({
     listContent: {
         paddingHorizontal: 16,
     },
-    languageItem: {
+    countryItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -131,7 +120,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: Colors.secondary,
     },
-    languageName: {
+    countryName: {
         color: Colors.white,
         fontSize: Fonts.sizes.md,
     },

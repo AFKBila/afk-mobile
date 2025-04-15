@@ -50,18 +50,13 @@ export default function MenuScreen() {
         },
         {
             icon: <Ionicons name="heart-outline" size={24} color={Colors.white} />,
-            label: 'Liked',
+            label: 'Activity',
             onPress: () => router.push('/(home)/menu/activity')
         },
         {
             icon: <Ionicons name="bookmark-outline" size={24} color={Colors.white} />,
             label: 'Saved',
             onPress: () => router.push('/(home)/menu/saved')
-        },
-        {
-            icon: <Ionicons name="archive-outline" size={24} color={Colors.white} />,
-            label: 'Archive',
-            onPress: () => router.push('/(home)/menu/archive')
         },
         {
             icon: <Ionicons name="lock-closed-outline" size={24} color={Colors.white} />,
@@ -91,7 +86,7 @@ export default function MenuScreen() {
         {
             icon: <Ionicons name="information-circle-outline" size={24} color={Colors.white} />,
             label: 'About',
-            onPress: () => router.push('/(home)/menu/more/about')
+            onPress: () => router.push('/(home)/menu/about')
         },
     ];
 
@@ -197,7 +192,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
     },
     logoutText: {
-        color: Colors.red,
+        color: Colors.error,
         fontSize: Fonts.sizes.md,
     },
 }); 

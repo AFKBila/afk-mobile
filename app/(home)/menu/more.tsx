@@ -10,31 +10,31 @@ export default function MoreOptionsScreen() {
     const moreOptions = [
         {
             label: 'Verification',
-            onPress: () => router.push('/(home)/menu/more/verification')
+            onPress: () => router.push('/menu/more/verification')
         },
         {
             label: 'Interests',
-            onPress: () => router.push('/(home)/menu/more/interests')
+            onPress: () => router.push('/menu/more/interests')
         },
         {
             label: 'Topics',
-            onPress: () => router.push('/(home)/menu/more/topics')
+            onPress: () => router.push('/menu/more/topics')
         },
         {
             label: 'Countries',
-            onPress: () => router.push('/(home)/menu/more/countries')
+            onPress: () => router.push('/menu/more/countries')
         },
         {
             label: 'Trending',
-            onPress: () => router.push('/(home)/menu/more/trending')
+            onPress: () => router.push('/menu/more/trending')
         },
         {
             label: 'Help',
-            onPress: () => router.push('/(home)/menu/more/help')
+            onPress: () => router.push('/menu/more/help')
         },
         {
             label: 'About',
-            onPress: () => router.push('/(home)/menu/more/about')
+            onPress: () => router.push('/menu/more/about')
         },
         {
             label: 'Go to Website',

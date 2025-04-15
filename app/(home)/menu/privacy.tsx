@@ -7,16 +7,27 @@ import { Fonts } from '@/constants/Fonts';
 import { StatusBar } from 'expo-status-bar';
 import { usePrivacyStore } from '@/store/usePrivacyStore';
 
+// Define the types for privacy settings
+type VisibilityLevel = 'everyone' | 'following' | 'none' | 'review';
+
+interface PrivacySettings {
+    mentions: VisibilityLevel;
+    onlineStatus: VisibilityLevel;
+    birthdayVisibility: VisibilityLevel;
+    hideFollowers: boolean;
+    hideFollowing: boolean;
+}
+
 export default function PrivacySettingsScreen() {
     const { privacySettings, updatePrivacy, blockedProfiles } = usePrivacyStore();
 
-    const toggleSetting = (key: keyof typeof privacySettings) => {
+    const toggleSetting = (key: keyof PrivacySettings) => {
         if (typeof privacySettings[key] === 'boolean') {
             updatePrivacy(key, !privacySettings[key]);
         }
     };
 
-    const changePrivacyOption = (key: keyof typeof privacySettings, value: string) => {
+    const changePrivacyOption = (key: keyof PrivacySettings, value: VisibilityLevel) => {
         updatePrivacy(key, value);
     };
 
@@ -37,7 +48,7 @@ export default function PrivacySettingsScreen() {
                         <Text style={styles.sectionTitle}>Mentions</Text>
                         <TouchableOpacity
                             style={styles.optionItem}
-                            onPress={() => router.push('/(home)/menu/privacy/mentions')}
+                            onPress={() => router.push('/menu/privacy/mentions')}
                         >
                             <Text style={styles.optionText}>
                                 {privacySettings.mentions === 'everyone' ? 'Everyone' :
@@ -53,7 +64,7 @@ export default function PrivacySettingsScreen() {
                         <Text style={styles.sectionTitle}>Online Status</Text>
                         <TouchableOpacity
                             style={styles.optionItem}
-                            onPress={() => router.push('/(home)/menu/privacy/online-status')}
+                            onPress={() => router.push('/menu/privacy/online-status')}
                         >
                             <Text style={styles.optionText}>
                                 {privacySettings.onlineStatus === 'everyone' ? 'Everyone' :
@@ -63,12 +74,12 @@ export default function PrivacySettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Birthday Visibility */}
+                    {/* Birthday */}
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Birthday Visibility</Text>
+                        <Text style={styles.sectionTitle}>Birthday</Text>
                         <TouchableOpacity
                             style={styles.optionItem}
-                            onPress={() => router.push('/(home)/menu/privacy/birthday')}
+                            onPress={() => router.push('/menu/privacy/birthday')}
                         >
                             <Text style={styles.optionText}>
                                 {privacySettings.birthdayVisibility === 'everyone' ? 'Everyone' :
@@ -78,14 +89,13 @@ export default function PrivacySettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Hide Followers/Following */}
+                    {/* Profile Visibility */}
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Profile Privacy</Text>
-
+                        <Text style={styles.sectionTitle}>Profile Visibility</Text>
                         <View style={styles.settingItem}>
                             <Text style={styles.settingText}>Hide Followers</Text>
                             <Switch
-                                trackColor={{ false: Colors.secondary, true: Colors.blue }}
+                                trackColor={{ false: Colors.secondary, true: Colors.primary }}
                                 thumbColor={Colors.white}
                                 ios_backgroundColor={Colors.secondary}
                                 onValueChange={() => toggleSetting('hideFollowers')}
@@ -96,7 +106,7 @@ export default function PrivacySettingsScreen() {
                         <View style={styles.settingItem}>
                             <Text style={styles.settingText}>Hide Following</Text>
                             <Switch
-                                trackColor={{ false: Colors.secondary, true: Colors.blue }}
+                                trackColor={{ false: Colors.secondary, true: Colors.primary }}
                                 thumbColor={Colors.white}
                                 ios_backgroundColor={Colors.secondary}
                                 onValueChange={() => toggleSetting('hideFollowing')}
@@ -105,15 +115,18 @@ export default function PrivacySettingsScreen() {
                         </View>
                     </View>
 
-                    {/* Blocked Profiles - moved to a sub-option */}
-                    <TouchableOpacity
-                        style={styles.navigationItem}
-                        onPress={() => router.push('/(home)/menu/privacy/blocked-profiles')}
-                    >
-                        <Text style={styles.navigationText}>Blocked Profiles</Text>
-                        <Text style={styles.countText}>{blockedProfiles.length}</Text>
-                        <Ionicons name="chevron-forward" size={20} color={Colors.grey} />
-                    </TouchableOpacity>
+                    {/* Blocked Profiles */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Blocked Accounts</Text>
+                        <TouchableOpacity
+                            style={styles.navigationItem}
+                            onPress={() => router.push('/menu/privacy/blocked-profiles')}
+                        >
+                            <Text style={styles.navigationText}>Blocked Profiles</Text>
+                            <Text style={styles.countText}>{blockedProfiles.length}</Text>
+                            <Ionicons name="chevron-forward" size={20} color={Colors.grey} />
+                        </TouchableOpacity>
+                    </View>
                 </ScrollView>
             </View>
         </>

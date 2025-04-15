@@ -20,7 +20,8 @@ export interface UserProfile {
   updatedAt?: string;
   clerkId?: string;
   clerkData?: any;
-  // Add any other fields you need
+  location?: string;
+  bio?: string;
 }
 
 // Define the store state interface

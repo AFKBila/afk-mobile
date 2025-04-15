@@ -8,6 +8,8 @@ type Props = {
   background: string;
   success: string;
   error: string;
+  brown: string;
+  lightBrown: string;
 };
 export const Colors: Props = {
   // primary: "#0C0C25",
@@ -20,4 +22,6 @@ export const Colors: Props = {
   background: "#EEEEEE",
   success: "#90C67C",
   error: "#dc2626",
+  brown: "#8B4513",
+  lightBrown: "#D2B48C",
 };

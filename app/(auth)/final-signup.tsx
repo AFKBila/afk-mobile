@@ -14,109 +14,88 @@ import { useAuth, useUser } from '@clerk/clerk-expo'
 const FinalSignup = () => {
     const [loading, setLoading] = useState(true);
     const [retrying, setRetrying] = useState(false);
-    const { user: storeUser } = useAuthStore();
+    const { user: storeUser, updateUser } = useAuthStore();
     const { userId, sessionId, getToken } = useAuth();
     const { user: clerkUser, isLoaded, isSignedIn } = useUser();
 
-    // Add immediate console log to see Clerk data as soon as component mounts
     useEffect(() => {
-        console.log("=== CLERK DATA ON MOUNT ===");
-        console.log("Auth state:", { userId, sessionId, isLoaded, isSignedIn });
-        console.log("Clerk user object:", clerkUser);
-        console.log("Clerk user JSON:", JSON.stringify(clerkUser, null, 2));
+        if (isLoaded && clerkUser) {
+            // Update store with Clerk data first
+            updateUser({
+                id: clerkUser.id,
+                email: clerkUser.primaryEmailAddress?.emailAddress || '',
+                firstName: clerkUser.firstName || '',
+                lastName: clerkUser.lastName || '',
+                fullName: `${clerkUser.firstName} ${clerkUser.lastName}`,
+                profileImage: clerkUser.imageUrl,
+                bio: "May we be guided by eternal grace ✨",
+                location: clerkUser.publicMetadata?.location as string || 'Ghana',
+            });
 
-        if (clerkUser) {
-            console.log("Clerk user ID:", clerkUser.id);
-            console.log("Clerk user image:", clerkUser.imageUrl);
-            console.log("Clerk user email:", clerkUser.primaryEmailAddress?.emailAddress);
-            console.log("Clerk user name:", clerkUser.firstName, clerkUser.lastName);
-        } else {
-            console.log("Clerk user is null or undefined");
+            console.log('=== CLERK USER DATA STORED ===', {
+                id: clerkUser.id,
+                email: clerkUser.primaryEmailAddress?.emailAddress,
+                name: `${clerkUser.firstName} ${clerkUser.lastName}`,
+                image: clerkUser.imageUrl,
+                metadata: clerkUser.publicMetadata
+            });
         }
     }, [clerkUser, isLoaded]);
 
-    // Log when isLoaded changes
-    useEffect(() => {
-        console.log("isLoaded changed to:", isLoaded);
-        if (isLoaded) {
-            console.log("Clerk data should be available now");
-            console.log("isSignedIn:", isSignedIn);
-            console.log("Clerk user after load:", clerkUser);
-        }
-    }, [isLoaded]);
-
-    useEffect(() => {
-        // Wait a bit longer to ensure Clerk data is loaded
-        const timer = setTimeout(() => {
-            console.log("=== BEFORE SAVE USER DATA ===");
-            console.log("isLoaded:", isLoaded);
-            console.log("isSignedIn:", isSignedIn);
-            console.log("Clerk user before save:", clerkUser);
-            saveUserData();
-        }, 2000); // Increased to 2 seconds for more time to load
-
-        return () => clearTimeout(timer);
-    }, [storeUser, retrying, isLoaded, isSignedIn]);
-
     const saveUserData = async () => {
         try {
-            console.log("=== SAVE USER DATA FUNCTION ===");
-            console.log("Auth state:", { userId, sessionId, isLoaded, isSignedIn });
-            console.log("Clerk user data:", clerkUser);
-
-            // Try to get a token to verify authentication
-            let token = null;
-            try {
-                token = await getToken();
-                console.log("Token available:", !!token);
-                if (token) {
-                    console.log("Token first 20 chars:", token.substring(0, 20) + "...");
-                }
-            } catch (e) {
-                console.log("Token error:", e);
+            if (!clerkUser || !isLoaded) {
+                console.log('=== NO CLERK USER DATA ===');
+                return;
             }
 
-            // Use Clerk userId or generate a fallback
-            const userIdToUse = userId || storeUser?.id || `user_${Math.random().toString(36).substring(2, 15)}`;
+            // Combine both Clerk and Store data
+            const finalUserData = {
+                // Clerk Data
+                id: clerkUser.id,
+                clerkId: clerkUser.id,
+                email: clerkUser.primaryEmailAddress?.emailAddress || '',
 
-            console.log("Using user ID:", userIdToUse);
-            console.log("User data from store:", storeUser);
+                // User Profile Data (from store)
+                username: storeUser?.username,
+                gender: storeUser?.gender,
+                dateOfBirth: storeUser?.dateOfBirth,
+                location: storeUser?.location || 'Ghana',
 
-            // Prepare user data with fallbacks
-            const userData = {
-                id: userIdToUse,
-                email: storeUser?.email || '',
-                firstName: storeUser?.firstName || '',
-                lastName: storeUser?.lastName || '',
-                fullName: storeUser?.fullName || '',
-                username: storeUser?.username || `user_${Math.random().toString(36).substring(2, 7)}`,
-                profileImage: storeUser?.profileImage || '',
-                gender: storeUser?.gender || '',
-                dateOfBirth: storeUser?.dateOfBirth || '',
-                country: storeUser?.country || '',
-                createdAt: storeUser?.createdAt || new Date().toISOString(),
+                // Combined/Override fields
+                firstName: storeUser?.firstName || clerkUser.firstName || '',
+                lastName: storeUser?.lastName || clerkUser.lastName || '',
+                fullName: storeUser?.fullName || `${clerkUser.firstName} ${clerkUser.lastName}`,
+                profileImage: storeUser?.profileImage || clerkUser.imageUrl,
+
+                // Additional fields
+                bio: storeUser?.bio || "May we be guided by eternal grace ✨",
+                createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                // Add clerk-specific fields directly to the user object
-                clerkId: clerkUser?.id || null,
-                clerkImageUrl: clerkUser?.imageUrl || null,
+                followersCount: 0,
+                followingCount: 0
             };
 
-            console.log("Final user data to save:", userData);
+            console.log('=== ATTEMPTING TO SAVE USER DATA ===', finalUserData);
 
-            // Save user data to Firestore
-            await setDoc(doc(db, 'users', userIdToUse), userData);
-            console.log("User data saved successfully to Firestore");
+            // Update store first
+            await updateUser(finalUserData);
 
-            // Show success message
+            // Save to Firestore with explicit error handling
+            try {
+                await setDoc(doc(db, 'users', clerkUser.id), finalUserData);
+                console.log('=== FIRESTORE SAVE SUCCESSFUL ===');
+            } catch (firestoreError) {
+                console.error('Firestore Error:', firestoreError);
+                throw firestoreError;
+            }
+
             toast.success('Account setup complete!');
-
-            // Navigate to home screen after a brief delay
-            setTimeout(() => {
-                router.push('/(home)/(tabs)/explore');
-            }, 2000);
+            // Try this exact path
+            router.replace('/(home)/(tabs)/profile');
         } catch (error) {
-            console.error('Error saving user data:', error);
-            toast.error('Failed to complete account setup. Tap to retry.');
+            console.error('Error in saveUserData:', error);
+            toast.error('Failed to complete account setup');
             setLoading(false);
         }
     };

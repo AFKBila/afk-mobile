@@ -49,37 +49,38 @@ function Login() {
     };
 
     const handleSocialLogin = async (providerName: string) => {
-        setProvider(providerName);
-        setLoading(true);
+        // setProvider(providerName);
+        // setLoading(true);
 
-        try {
-            let result;
+        // try {
+        //     let result;
 
-            switch (providerName) {
-                case 'Google':
-                    result = await startGoogleFlow();
-                    break;
-                case 'Apple':
-                    result = await startAppleFlow();
-                    break;
-                case 'Twitter':
-                    result = await startTwitterFlow();
-                    break;
-                default:
-                    throw new Error(`Unsupported provider: ${providerName}`);
-            }
+        //     switch (providerName) {
+        //         case 'Google':
+        //             result = await startGoogleFlow();
+        //             break;
+        //         case 'Apple':
+        //             result = await startAppleFlow();
+        //             break;
+        //         case 'Twitter':
+        //             result = await startTwitterFlow();
+        //             break;
+        //         default:
+        //             throw new Error(`Unsupported provider: ${providerName}`);
+        //     }
 
-            if (result?.createdSessionId) {
-                await fetchUserData(result.createdSessionId);
-            }
+        //     if (result?.createdSessionId) {
+        //         await fetchUserData(result.createdSessionId);
+        //     }
 
-            handleAuthResult(result, false);
-        } catch (error) {
-            console.error(`Login failed:`, error);
-            toast.error(`Failed to login with ${providerName}`);
-        } finally {
-            setLoading(false);
-        }
+        //     handleAuthResult(result, false);
+        // } catch (error) {
+        //     console.error(`Login failed:`, error);
+        //     toast.error(`Failed to login with ${providerName}`);
+        // } finally {
+        //     setLoading(false);
+        // }
+        router.push('/(home)/(tabs)')
     }
 
     return (

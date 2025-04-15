@@ -10,6 +10,8 @@ import MainContainer from '@/common/MainContainer'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
 import { toast } from 'sonner-native'
 import { useAuth, useUser } from '@clerk/clerk-expo'
+import { navigate } from '@/utils/navigation'
+import { ROUTES } from '@/utils/navigation'
 
 const FinalSignup = () => {
     const [loading, setLoading] = useState(true);
@@ -44,61 +46,56 @@ const FinalSignup = () => {
 
     const saveUserData = async () => {
         try {
-            if (!clerkUser || !isLoaded) {
-                console.log('=== NO CLERK USER DATA ===');
-                return;
-            }
+            if (!clerkUser || !isLoaded) return;
 
-            // Combine both Clerk and Store data
+            setLoading(true);
+
+            // Combine Clerk + Auth Store data
             const finalUserData = {
-                // Clerk Data
+                // Clerk primary data
                 id: clerkUser.id,
-                clerkId: clerkUser.id,
-                email: clerkUser.primaryEmailAddress?.emailAddress || '',
+                email: clerkUser.primaryEmailAddress?.emailAddress,
 
-                // User Profile Data (from store)
+                // Auth store data (from profile setup)
                 username: storeUser?.username,
                 gender: storeUser?.gender,
                 dateOfBirth: storeUser?.dateOfBirth,
-                location: storeUser?.location || 'Ghana',
+                location: storeUser?.location,
 
                 // Combined/Override fields
                 firstName: storeUser?.firstName || clerkUser.firstName || '',
                 lastName: storeUser?.lastName || clerkUser.lastName || '',
-                fullName: storeUser?.fullName || `${clerkUser.firstName} ${clerkUser.lastName}`,
                 profileImage: storeUser?.profileImage || clerkUser.imageUrl,
 
                 // Additional fields
-                bio: storeUser?.bio || "May we be guided by eternal grace ✨",
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                bio: "May we be guided by eternal grace ✨",
                 followersCount: 0,
-                followingCount: 0
-            };
+                followingCount: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            } as const;
 
-            console.log('=== ATTEMPTING TO SAVE USER DATA ===', finalUserData);
+            // Save to Firestore
+            await setDoc(doc(db, 'users', clerkUser.id), finalUserData);
 
-            // Update store first
+            // Update auth store one final time
             await updateUser(finalUserData);
 
-            // Save to Firestore with explicit error handling
-            try {
-                await setDoc(doc(db, 'users', clerkUser.id), finalUserData);
-                console.log('=== FIRESTORE SAVE SUCCESSFUL ===');
-            } catch (firestoreError) {
-                console.error('Firestore Error:', firestoreError);
-                throw firestoreError;
-            }
-
-            toast.success('Account setup complete!');
-            // Try this exact path
-            router.replace('/(home)/(tabs)/profile');
+            navigate(ROUTES.HOME.TABS.PROFILE);
         } catch (error) {
-            console.error('Error in saveUserData:', error);
-            toast.error('Failed to complete account setup');
+            console.error('Error:', error);
+            toast.error('Failed to complete setup');
+        } finally {
             setLoading(false);
         }
     };
+
+    // Add trigger for saveUserData with retry mechanism
+    useEffect(() => {
+        if (isLoaded && clerkUser && !loading) {
+            saveUserData();
+        }
+    }, [isLoaded, clerkUser, retrying]); // Added retrying to dependencies
 
     // Handle retry
     const handleRetry = () => {

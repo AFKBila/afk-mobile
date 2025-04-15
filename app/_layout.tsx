@@ -10,6 +10,8 @@ import { LogBox, StyleSheet } from 'react-native';
 import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo';
 import { tokenCache } from '@/utils/cache';
 import LoadingScreen from '@/components/common/LoadingScreen';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { Colors } from '@/constants/Colors';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete
 SplashScreen.preventAutoHideAsync();
@@ -69,22 +71,25 @@ export default function RootLayout() {
   if (!fontsLoaded) return <LoadingScreen />;
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
           <ClerkLoaded>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                animation: 'slide_from_right',
-                gestureEnabled: false,
-              }}
-            >
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(home)" options={{ headerShown: false }} />
-              {/* <Stack.Screen name="+not-found" /> */}
-            </Stack>
-            <Toaster position="top-center" />
+            <ErrorBoundary>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  contentStyle: {
+                    backgroundColor: Colors.primary
+                  }
+                }}
+              >
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(home)" options={{ headerShown: false }} />
+              </Stack>
+              <Toaster position="top-center" />
+            </ErrorBoundary>
           </ClerkLoaded>
         </ClerkProvider>
       </SafeAreaProvider>

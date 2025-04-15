@@ -22,9 +22,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     followers,
     following
 }) => {
+
+    const handleMenu = () => {
+        router.push('/(home)/menu');
+    }
     return (
         <View style={styles.container}>
-            {/* Top Bar */}
             <View style={styles.topBar}>
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="chevron-back" size={24} color={Colors.white} />
@@ -42,7 +45,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         <Ionicons name="heart-outline" size={24} color={Colors.white} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.iconButton}>
+                    <TouchableOpacity style={styles.iconButton} onPress={handleMenu}>
                         <Image
                             source={require('@/assets/icons/menu.jpg')}
                             style={styles.menuIcon}
@@ -51,14 +54,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 </View>
             </View>
 
-            {/* Profile Info */}
+            {/* Profile Info - Updated Layout */}
             <View style={styles.profileInfo}>
-                <Image
-                    source={{ uri: avatar }}
-                    style={styles.avatar}
-                />
-                <Text style={styles.name}>{name}</Text>
-                <Text style={styles.location}>{location}</Text>
+                <View style={styles.profileRow}>
+                    <Image
+                        source={{ uri: avatar }}
+                        style={styles.avatar}
+                    />
+                    <View style={styles.profileText}>
+                        <Text style={styles.name}>{name}</Text>
+                        <Text style={styles.location}>{location}</Text>
+                    </View>
+                </View>
                 <Text style={styles.bio}>{bio}</Text>
             </View>
 
@@ -103,22 +110,27 @@ const styles = StyleSheet.create({
     bookmarkIcon: {
         width: 24,
         height: 24,
-        // tintColor: Colors.white,
     },
     menuIcon: {
         width: 28,
         height: 28,
-        // tintColor: Colors.white,
     },
     profileInfo: {
-        alignItems: 'center',
         marginBottom: 20,
     },
+    profileRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
     avatar: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        marginBottom: 10,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        marginRight: 12,
+    },
+    profileText: {
+        flex: 1,
     },
     name: {
         fontSize: Fonts.sizes.lg,
@@ -129,12 +141,10 @@ const styles = StyleSheet.create({
     location: {
         fontSize: Fonts.sizes.sm,
         color: Colors.grey,
-        marginBottom: 10,
     },
     bio: {
         fontSize: Fonts.sizes.md,
         color: Colors.white,
-        textAlign: 'center',
         lineHeight: 20,
     },
     statsContainer: {
@@ -146,12 +156,11 @@ const styles = StyleSheet.create({
     stats: {
         flexDirection: 'row',
         alignItems: 'center',
-        // justifyContent: 'center',
-        // gap: 10,
     },
     statsText: {
         color: Colors.white,
         fontSize: Fonts.sizes.sm,
+        fontWeight: "bold",
     },
     editButton: {
         backgroundColor: Colors.white,

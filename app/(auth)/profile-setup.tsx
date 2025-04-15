@@ -13,6 +13,8 @@ import { format } from 'date-fns'
 import AuthContainer from '@/components/auth/AuthContainer'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
 import MainContainer from '@/common/MainContainer'
+import { useLoading } from '@/hooks/useLoading'
+import { ROUTES } from '@/utils/navigation'
 
 type Gender = 'male' | 'female' | 'other' | null;
 
@@ -24,7 +26,7 @@ const ProfileSetup = () => {
     const [dob, setDob] = useState('');
     const [date, setDate] = useState<Date | null>(null);
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const { isLoading, withLoading } = useLoading();
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     // Get updateUser from auth store
@@ -67,22 +69,15 @@ const ProfileSetup = () => {
             return;
         }
 
-        setLoading(true);
-
-        // Update user data in store
-        updateUser({
-            fullName: name,
-            username,
-            gender: gender as string,
-            dateOfBirth: dob,
+        withLoading(async () => {
+            await updateUser({
+                fullName: name,
+                username,
+                gender: gender as string,
+                dateOfBirth: dob,
+            });
+            router.push(ROUTES.AUTH.PHOTO);
         });
-
-        // Simulate API call delay
-        setTimeout(() => {
-            // Navigate to next screen
-            router.push('/(auth)/photo');
-            setLoading(false);
-        }, 1500);
     };
 
     // Auto-check for form completion whenever any field changes
@@ -103,7 +98,7 @@ const ProfileSetup = () => {
                 <View style={styles.formContainer}>
                     <Text style={styles.subtitle}>Tell us about yourself</Text>
 
-                    {loading ? (
+                    {isLoading ? (
                         <View style={styles.loadingContainer}>
                             <LoadingIndicator
                                 type="dots"

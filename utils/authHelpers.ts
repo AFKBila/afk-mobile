@@ -32,17 +32,21 @@ export const handleAuthResult = async (
   result: OAuthResult | undefined,
   isSignUp: boolean = false
 ) => {
-  if (!result) {
-    toast.error("Authentication was canceled");
-    return false;
-  }
+  try {
+    if (!result) {
+      console.log("=== AUTH CANCELED ===");
+      toast.error("Authentication was canceled");
+      return false;
+    }
 
-  console.log("=== AUTH RESULT DATA ===", JSON.stringify(result, null, 2));
+    console.log("=== AUTH RESULT DATA ===", JSON.stringify(result, null, 2));
 
-  if (result.createdSessionId) {
+    if (!result.createdSessionId) {
+      console.log("=== NO SESSION CREATED ===");
+      throw new Error("No session created");
+    }
+
     const { updateUser } = useAuthStore.getState();
-
-    // Get user data from the correct location (signUp or signIn)
     const userData = {
       id: result.signUp?.createdUserId || result.signIn?.userId,
       clerkId: result.signUp?.createdUserId || result.signIn?.userId,
@@ -65,12 +69,23 @@ export const handleAuthResult = async (
     console.log("=== STORING USER DATA ===", userData);
     await updateUser(userData);
 
-    if (isSignUp) {
-      router.push("/(auth)/profile-setup");
-    } else {
-      router.push("/(home)/(tabs)/explore");
+    // Navigation with error handling
+    try {
+      if (isSignUp) {
+        console.log("=== NAVIGATING TO PROFILE SETUP ===");
+        await router.replace("/(auth)/profile-setup");
+      } else {
+        console.log("=== NAVIGATING TO EXPLORE ===");
+        await router.replace("/(home)/(tabs)/explore");
+      }
+      return true;
+    } catch (navError) {
+      console.error("Navigation failed:", navError);
+      throw navError;
     }
-    return true;
+  } catch (error) {
+    console.error("Auth result handling failed:", error);
+    toast.error("Authentication failed");
+    return false;
   }
-  return false;
 };

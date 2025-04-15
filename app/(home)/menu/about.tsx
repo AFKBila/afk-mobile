@@ -21,19 +21,19 @@ export default function AboutScreen() {
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.logoContainer}>
                         <Image
-                            source={require('@/assets/images/icon.png')}
+                            source={require('@/assets/images/afrokabila-logo.png')}
                             style={styles.logo}
                             resizeMode="contain"
                         />
+                        <Text style={styles.version}>Version 1.0.0</Text>
                     </View>
 
-                    <Text style={styles.appName}>Fixxies</Text>
-                    <Text style={styles.version}>Version 1.0.0</Text>
+                    {/* <Text style={styles.appName}>Afrokabila</Text> */}
 
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>About Fixxies</Text>
+                        <Text style={styles.sectionTitle}>About Afrokabila</Text>
                         <Text style={styles.sectionText}>
-                            Fixxies is a social platform for connecting with friends and sharing moments.
+                            Afrokabila is a social platform for connecting with friends and sharing moments.
                             Our mission is to create a positive and engaging community for everyone.
                         </Text>
                     </View>
@@ -60,7 +60,7 @@ export default function AboutScreen() {
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Credits</Text>
                         <Text style={styles.sectionText}>
-                            Made with ❤️ by the Fixxies Team
+                            Made with ❤️ by the Afrokabila Team
                         </Text>
                     </View>
                 </ScrollView>
@@ -96,19 +96,18 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         alignItems: 'center',
-        marginTop: 30,
-        marginBottom: 20,
+        marginVertical: 10,
     },
     logo: {
-        width: 100,
-        height: 100,
+        width: "100%",
+        height: 200,
     },
-    appName: {
-        color: Colors.white,
-        fontSize: Fonts.sizes.xl,
-        fontWeight: Fonts.weights.bold as any,
-        textAlign: 'center',
-    },
+    // appName: {
+    //     color: Colors.white,
+    //     fontSize: Fonts.sizes.xl,
+    //     fontWeight: Fonts.weights.bold as any,
+    //     textAlign: 'center',
+    // },
     version: {
         color: Colors.grey,
         fontSize: Fonts.sizes.md,

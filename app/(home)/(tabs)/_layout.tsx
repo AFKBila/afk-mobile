@@ -27,6 +27,7 @@ export default function TabLayout() {
                     elevation: 0,
                     shadowOpacity: 0,
                 },
+                tabBarHideOnKeyboard: true,
                 tabBarShowLabel: false,
                 tabBarActiveTintColor: Colors.white,
                 tabBarInactiveTintColor: Colors.secondary,

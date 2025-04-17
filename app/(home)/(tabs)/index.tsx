@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View, TouchableOpacity, Alert, Image } from 'react-native'
+import { Button, StyleSheet, Text, View, TouchableOpacity, Alert, Image, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import MainContainer from '@/common/MainContainer'
 import { useAuth } from '@clerk/clerk-expo'
@@ -7,6 +7,7 @@ import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
 import { Ionicons } from '@expo/vector-icons'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
+import CommentInput from '@/components/home/CommentInput'
 
 // Header component for the app
 const AppHeader = () => {
@@ -43,6 +44,11 @@ const AppHeader = () => {
 
 function Home() {
     const { isLoaded } = useAuth();
+    const [posts, setPosts] = useState<string[]>([]);
+
+    const handlePostSubmit = (comment: string) => {
+        setPosts([comment, ...posts]);
+    };
 
     if (!isLoaded) {
         return (
@@ -56,11 +62,23 @@ function Home() {
     return (
         <MainContainer style={styles.container}>
             <AppHeader />
+            <CommentInput onSubmit={handlePostSubmit} />
 
-            <View style={styles.content}>
-                <Text style={styles.welcomeText}>Welcome to Afrokabila</Text>
-                <Text style={styles.subText}>Your account is ready!</Text>
-            </View>
+            {posts.length > 0 ? (
+                <FlatList
+                    data={posts}
+                    keyExtractor={(item, index) => `post-${index}`}
+                    renderItem={({ item }) => (
+                        <View style={styles.postContainer}>
+                            <Text style={styles.postText}>{item}</Text>
+                        </View>
+                    )}
+                />
+            ) : (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>No posts yet. Be the first to share something!</Text>
+                </View>
+            )}
         </MainContainer>
     )
 }
@@ -102,37 +120,25 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    content: {
+    postContainer: {
+        padding: 16,
+    },
+    postText: {
+        color: Colors.white,
+        fontFamily: Fonts.primary,
+        fontSize: Fonts.sizes.md,
+    },
+    emptyContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
+        padding: 20,
     },
-    welcomeText: {
-        fontSize: Fonts.sizes.lg,
-        fontWeight: Fonts.weights.bold as any,
-        color: Colors.white,
-        marginBottom: 10,
-    },
-    subText: {
-        fontSize: Fonts.sizes.md,
+    emptyText: {
         color: Colors.grey,
-    },
-    signOutButton: {
-        backgroundColor: Colors.primary,
-        padding: 15,
-        borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-        marginHorizontal: 20,
-    },
-    signOutText: {
-        color: Colors.white,
+        fontFamily: Fonts.primary,
         fontSize: Fonts.sizes.md,
-        fontWeight: Fonts.weights.medium as any,
-        marginLeft: 10,
+        textAlign: 'center',
     },
     loadingContainer: {
         flex: 1,
@@ -144,6 +150,7 @@ const styles = StyleSheet.create({
         color: Colors.white,
         marginTop: 10,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     starIcon: {
         width: 20,

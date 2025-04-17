@@ -73,7 +73,7 @@ function Home() {
     };
 
     const handleComment = (postId: string) => {
-        // Navigate to comments screen or open comments modal
+        // Navigate to comments screen or open comments modal (gorhom bottom sheet)
         console.log(`Comment on post ${postId}`);
     };
 
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 40,
+        paddingTop: 30,
         paddingBottom: 15,
         backgroundColor: Colors.primary,
         width: '100%',

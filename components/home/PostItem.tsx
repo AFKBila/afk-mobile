@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View,
     Image,
     StyleSheet,
     TouchableOpacity,
     FlatList,
-    Dimensions
+    Dimensions,
+    LogBox
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
@@ -41,6 +42,9 @@ const PostItem: React.FC<PostItemProps> = ({
 }) => {
     const [isLiked, setIsLiked] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const flatListRef = useRef<FlatList>(null);
+
+    LogBox.ignoreAllLogs();
 
     const handleLike = () => {
         setIsLiked(!isLiked);
@@ -88,20 +92,35 @@ const PostItem: React.FC<PostItemProps> = ({
                         />
                     ) : (
                         <FlatList
+                            ref={flatListRef}
                             data={post.imageUris}
                             keyExtractor={(uri, index) => `${post.id}-image-${index}`}
                             horizontal
                             pagingEnabled
-                            showsHorizontalScrollIndicator={true}
+                            showsHorizontalScrollIndicator={false}
+                            snapToInterval={width}
+                            decelerationRate="fast"
+                            snapToAlignment="start"
+                            bounces={false}
                             renderItem={({ item: uri }) => (
-                                <Image
-                                    source={{ uri }}
-                                    style={styles.multipleImage}
-                                    resizeMode="cover"
-                                />
+                                <View style={styles.imageWrapper}>
+                                    <Image
+                                        source={{ uri }}
+                                        style={styles.multipleImage}
+                                        resizeMode="cover"
+                                    />
+                                </View>
                             )}
                         />
                     )}
+                </View>
+            )}
+
+            {/* post captions */}
+            {post.text && (
+                <View style={styles.captionContainer}>
+                    <Text style={styles.username}>{post.username}</Text>
+                    <Text style={styles.captionText}>{post.text}</Text>
                 </View>
             )}
 
@@ -145,12 +164,12 @@ const PostItem: React.FC<PostItemProps> = ({
             )}
 
             {/* Caption */}
-            {post.text && (
+            {/* {post.text && (
                 <View style={styles.captionContainer}>
                     <Text style={styles.username}>{post.username}</Text>
                     <Text style={styles.captionText}>{post.text}</Text>
                 </View>
-            )}
+            )} */}
 
             {/* Comments Count */}
             {post.comments > 0 && (
@@ -199,6 +218,11 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         width: '100%',
+        overflow: 'hidden',
+    },
+    imageWrapper: {
+        width: width,
+        height: width,
     },
     singleImage: {
         width: '100%',

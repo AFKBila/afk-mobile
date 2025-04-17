@@ -8,6 +8,7 @@ import { Fonts } from '@/constants/Fonts'
 import { Ionicons } from '@expo/vector-icons'
 import LoadingIndicator from '@/components/common/LoadingIndicator'
 import CommentInput from '@/components/home/CommentInput'
+import PostItem, { PostData } from '@/components/home/PostItem'
 
 // Header component for the app
 const AppHeader = () => {
@@ -42,43 +43,49 @@ const AppHeader = () => {
     );
 };
 
-// Update the Post type and state
-interface Post {
-    id: string;
-    text: string;
-    imageUris?: string[];
-    timestamp: number;
-}
-
 function Home() {
-    const { isLoaded } = useAuth();
-    const [posts, setPosts] = useState<Post[]>([]);
+    const { isLoaded, userId } = useAuth();
+    const [posts, setPosts] = useState<PostData[]>([]);
     const [refreshing, setRefreshing] = useState(false);
 
     const handlePostSubmit = (comment: string, imageUris?: string[]) => {
-        const newPost: Post = {
+        const newPost: PostData = {
             id: Date.now().toString(),
             text: comment,
             imageUris,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            username: "chiomao_kafor",
+            userAvatar: "https://randomuser.me/api/portraits/women/32.jpg",
+            likes: 0,
+            comments: 0
         };
         setPosts([newPost, ...posts]);
+    };
+
+    const handleLike = (postId: string) => {
+        setPosts(prevPosts =>
+            prevPosts.map(post =>
+                post.id === postId
+                    ? { ...post, likes: post.likes + 1, likedBy: [...(post.likedBy || []), "user123"] }
+                    : post
+            )
+        );
+    };
+
+    const handleComment = (postId: string) => {
+        // Navigate to comments screen or open comments modal
+        console.log(`Comment on post ${postId}`);
+    };
+
+    const handleSave = (postId: string) => {
+        console.log(`Save post ${postId}`);
     };
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         try {
             // In the future, this is where you'll fetch posts from Firebase
-            // For now, we'll just simulate a delay
             await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // You can add test data here if you want
-            // const testPost = {
-            //     id: `test-${Date.now()}`,
-            //     text: 'Refreshed post',
-            //     timestamp: Date.now()
-            // };
-            // setPosts(prevPosts => [testPost, ...prevPosts]);
         } catch (error) {
             console.error('Error refreshing posts:', error);
         } finally {
@@ -105,34 +112,12 @@ function Home() {
                     data={posts}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <View style={styles.postContainer}>
-                            {item.imageUris && item.imageUris.length > 0 && (
-                                <View style={styles.imageContainer}>
-                                    {item.imageUris.length === 1 ? (
-                                        <Image
-                                            source={{ uri: item.imageUris[0] }}
-                                            style={styles.postImage}
-                                            resizeMode="cover"
-                                        />
-                                    ) : (
-                                        <FlatList
-                                            data={item.imageUris}
-                                            keyExtractor={(uri, index) => `${item.id}-image-${index}`}
-                                            horizontal
-                                            showsHorizontalScrollIndicator={true}
-                                            renderItem={({ item: uri }) => (
-                                                <Image
-                                                    source={{ uri }}
-                                                    style={styles.multipleImage}
-                                                    resizeMode="cover"
-                                                />
-                                            )}
-                                        />
-                                    )}
-                                </View>
-                            )}
-                            <Text style={styles.postText}>{item.text}</Text>
-                        </View>
+                        <PostItem
+                            post={item}
+                            onLike={handleLike}
+                            onComment={handleComment}
+                            onSave={handleSave}
+                        />
                     )}
                     refreshControl={
                         <RefreshControl

@@ -42,12 +42,26 @@ const AppHeader = () => {
     );
 };
 
+// Update the Post type and state
+interface Post {
+    id: string;
+    text: string;
+    imageUri?: string;
+    timestamp: number;
+}
+
 function Home() {
     const { isLoaded } = useAuth();
-    const [posts, setPosts] = useState<string[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
 
-    const handlePostSubmit = (comment: string) => {
-        setPosts([comment, ...posts]);
+    const handlePostSubmit = (comment: string, imageUri?: string) => {
+        const newPost: Post = {
+            id: Date.now().toString(),
+            text: comment,
+            imageUri,
+            timestamp: Date.now()
+        };
+        setPosts([newPost, ...posts]);
     };
 
     if (!isLoaded) {
@@ -67,10 +81,17 @@ function Home() {
             {posts.length > 0 ? (
                 <FlatList
                     data={posts}
-                    keyExtractor={(item, index) => `post-${index}`}
+                    keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                         <View style={styles.postContainer}>
-                            <Text style={styles.postText}>{item}</Text>
+                            {item.imageUri && (
+                                <Image
+                                    source={{ uri: item.imageUri }}
+                                    style={styles.postImage}
+                                    resizeMode="cover"
+                                />
+                            )}
+                            <Text style={styles.postText}>{item.text}</Text>
                         </View>
                     )}
                 />
@@ -155,7 +176,13 @@ const styles = StyleSheet.create({
     starIcon: {
         width: 20,
         height: 20,
-    }
+    },
+    postImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
 })
 
 export default Home;

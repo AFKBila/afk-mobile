@@ -5,15 +5,18 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { Text } from '@/components/ui/Text';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 
 interface CommentInputProps {
-    onSubmit?: (comment: string) => void;
+    onSubmit?: (comment: string, imageUri?: string) => void;
     placeholder?: string;
     username?: string;
 }
@@ -25,12 +28,71 @@ const CommentInput: React.FC<CommentInputProps> = ({
 }) => {
     const [comment, setComment] = useState('');
     const [isFocused, setIsFocused] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const handleSubmit = () => {
-        if (comment.trim().length > 0 && onSubmit) {
-            onSubmit(comment);
+        if ((comment.trim().length > 0 || selectedImage) && onSubmit) {
+            onSubmit(comment, selectedImage || undefined);
             setComment('');
+            setSelectedImage(null);
             Keyboard.dismiss();
+        }
+    };
+
+    const requestPermissions = async () => {
+        const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+        const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
+
+        if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
+            Alert.alert(
+                'Permissions Required',
+                'Please grant camera and media library permissions to use this feature.',
+                [{ text: 'OK' }]
+            );
+            return false;
+        }
+        return true;
+    };
+
+    const openCamera = async () => {
+        const hasPermissions = await requestPermissions();
+        if (!hasPermissions) return;
+
+        try {
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setSelectedImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            console.error('Error taking photo:', error);
+            Alert.alert('Error', 'Failed to take photo. Please try again.');
+        }
+    };
+
+    const openImagePicker = async () => {
+        const hasPermissions = await requestPermissions();
+        if (!hasPermissions) return;
+
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setSelectedImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            console.error('Error picking image:', error);
+            Alert.alert('Error', 'Failed to pick image. Please try again.');
         }
     };
 
@@ -58,28 +120,41 @@ const CommentInput: React.FC<CommentInputProps> = ({
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
                     />
+
+                    {selectedImage && (
+                        <View style={styles.selectedImageContainer}>
+                            <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
+                            <TouchableOpacity
+                                style={styles.removeImageButton}
+                                onPress={() => setSelectedImage(null)}
+                            >
+                                <Ionicons name="close-circle" size={24} color={Colors.white} />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
                     {isFocused && (
                         <View style={styles.actionButtons}>
                             <View style={styles.iconButtonsGroup}>
-                                <TouchableOpacity style={styles.iconButton}>
+                                <TouchableOpacity style={styles.iconButton} onPress={openImagePicker}>
                                     <Ionicons name="image-outline" size={24} color={Colors.grey} />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.iconButton}>
+                                <TouchableOpacity style={styles.iconButton} onPress={openCamera}>
                                     <Ionicons name="camera-outline" size={24} color={Colors.grey} />
                                 </TouchableOpacity>
                             </View>
                             <TouchableOpacity
                                 style={[
                                     styles.postButton,
-                                    comment.trim().length > 0 && styles.postButtonActive
+                                    (comment.trim().length > 0 || selectedImage) && styles.postButtonActive
                                 ]}
                                 onPress={handleSubmit}
-                                disabled={comment.trim().length === 0}
+                                disabled={comment.trim().length === 0 && !selectedImage}
                             >
                                 <Text
                                     style={[
                                         styles.postButtonText,
-                                        comment.trim().length > 0 && styles.postButtonTextActive
+                                        (comment.trim().length > 0 || selectedImage) && styles.postButtonTextActive
                                     ]}
                                 >
                                     Post
@@ -132,6 +207,22 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.md,
         minHeight: 24,
         padding: 0,
+    },
+    selectedImageContainer: {
+        marginTop: 8,
+        position: 'relative',
+    },
+    selectedImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+    },
+    removeImageButton: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        borderRadius: 12,
     },
     actionButtons: {
         flexDirection: 'row',

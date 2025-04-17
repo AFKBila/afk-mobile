@@ -3,6 +3,7 @@ import { LogBox, StyleSheet, View } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import MainContainer from '@/common/MainContainer';
 import ProfileHeader from '@/components/home/ProfileHeader';
+import FixedProfileHeader from '@/components/profile/FixedProfileHeader';
 import { useUser } from '@clerk/clerk-expo';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useSocialStore } from '@/store/useSocialStore';
@@ -87,20 +88,24 @@ const Profile = () => {
     }
 
     return (
-        <MainContainer style={styles.container}>
-            <ProfileHeader
-                name={`${storeUser?.firstName} ${storeUser?.lastName}`}
-                location={storeUser?.location || 'Ghana'}
-                bio={storeUser?.bio || "May we be guided by eternal grace ✨"}
-                avatar={storeUser?.profileImage || ''}
-                followers={followersCount}
-                following={followingCount}
-            />
-            <View style={styles.contentContainer}>
-                <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
-                {renderContent()}
-            </View>
-        </MainContainer>
+        <>
+            <FixedProfileHeader />
+
+            <MainContainer style={styles.container}>
+                <View style={styles.contentContainer}>
+                    <ProfileHeader
+                        name={`${storeUser?.firstName} ${storeUser?.lastName}`}
+                        location={storeUser?.location || 'Ghana'}
+                        bio={storeUser?.bio || "May we be guided by eternal grace ✨"}
+                        avatar={storeUser?.profileImage || ''}
+                        followers={followersCount}
+                        following={followingCount}
+                    />
+                    <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
+                    {renderContent()}
+                </View>
+            </MainContainer>
+        </>
     );
 };
 
@@ -108,6 +113,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.primary,
+        paddingTop: 70,
     },
     contentContainer: {
         flex: 1,

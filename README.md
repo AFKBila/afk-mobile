@@ -197,6 +197,7 @@ For more detailed documentation on specific parts of the codebase:
 - [Firebase Integration](./docs/firebase.md)
 - [UI Components](./docs/components.md)
 - [Menu System](./docs/menu-system.md)
+- [Store Docs](./docs/store-docs.md)
 
 ## 📄 License
 

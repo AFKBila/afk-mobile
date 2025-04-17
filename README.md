@@ -98,6 +98,55 @@ Zustand stores:
 - Verification system
 - Help and support access
 
+## Features
+
+### Social Features
+
+- Native share functionality
+- Custom invite system with deep linking
+- Follow/invite friends system
+- Social connections
+
+### User Experience
+
+- QR code scanning and sharing
+- Image picker integration
+- Custom toast notifications
+- Haptic feedback support
+
+### Privacy & Security
+
+- Blocked profiles management
+- Online status controls
+- Birthday visibility settings
+- Mention permissions
+
+### Content & Discovery
+
+- Topics and interests system
+- Trending content section
+- Country-based preferences
+- Archive system for posts
+
+### Media
+
+- Camera integration
+- Media library access
+- Image sharing capabilities
+- Custom media picker
+
+## Technical Integrations
+
+- expo-sharing
+- expo-camera
+- expo-image-picker
+- expo-media-library
+- expo-clipboard
+- expo-web-browser
+- expo-linking
+- expo-haptics
+- sonner-native for toasts
+
 ## 🧪 Development
 
 ### Prerequisites
@@ -151,4 +200,4 @@ For more detailed documentation on specific parts of the codebase:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.

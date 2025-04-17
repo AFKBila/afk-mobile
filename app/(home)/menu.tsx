@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.lg,
         fontWeight: Fonts.weights.bold as any,
         marginLeft: 20,
+        fontFamily: Fonts.primary,
     },
     scrollView: {
         flex: 1,
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
     menuItemText: {
         color: Colors.white,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     divider: {
         height: 1,
@@ -216,6 +218,7 @@ const styles = StyleSheet.create({
     accountSwitchText: {
         color: Colors.link,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     logoutButton: {
         paddingVertical: 16,
@@ -223,5 +226,6 @@ const styles = StyleSheet.create({
     logoutText: {
         color: Colors.error,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
 }); 

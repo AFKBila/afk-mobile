@@ -4,12 +4,17 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import { format } from 'date-fns';
 
 interface PhotoViewerProps {
     imageUrl: any;
     username: string;
     location?: string;
     photoId: string;
+    caption?: string;
+    timestamp?: any;
+    likeCount?: number;
+    commentCount?: number;
     isActive?: boolean;
 }
 
@@ -20,13 +25,20 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
     username,
     location,
     photoId,
+    caption = "No caption in mind, just a random & grateful Live boy 🙌",
+    timestamp = new Date(),
+    likeCount = 152,
+    commentCount = 24,
     isActive = false
 }) => {
     const [isLiked, setIsLiked] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [likes, setLikes] = useState(likeCount);
+    const [comments, setComments] = useState(commentCount);
 
     const handleLike = () => {
         setIsLiked(!isLiked);
+        setLikes(prev => isLiked ? prev - 1 : prev + 1);
     };
 
     const handleSave = () => {
@@ -37,6 +49,9 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
         // This would open a bottom sheet in a real implementation
         console.log('Open comment bottom sheet');
     };
+
+    // Format timestamp
+    const formattedDate = format(timestamp, 'dd MMMM yyyy');
 
     // Only show the header for the first photo
     const showHeader = photoId === "1";
@@ -73,7 +88,6 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
                     source={imageUrl}
                     style={styles.image}
                     resizeMode="cover"
-                    // Add these props to improve performance
                     fadeDuration={0}
                     progressiveRenderingEnabled={true}
                 />
@@ -137,27 +151,29 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
                     />
                 </View>
                 <Text style={styles.likeCount}>
-                    Liked by <Text style={styles.boldText}>_maame_dufie_</Text> and others
+                    Liked by <Text style={styles.boldText}>_maame_dufie_</Text> and {likes > 1 ? `${likes - 1} others` : 'others'}
                 </Text>
             </View>
 
             {/* Caption */}
             <View style={styles.captionContainer}>
                 <Text style={styles.captionUsername}>{username}</Text>
-                <Text style={styles.caption}>No caption in mind, just a random & grateful Live boy 🙌</Text>
+                <Text style={styles.caption}>{caption}</Text>
             </View>
 
             {/* View all comments */}
-            <TouchableOpacity
-                style={styles.viewCommentsButton}
-                onPress={handleCommentPress}
-                activeOpacity={0.7}
-            >
-                <Text style={styles.viewCommentsText}>View all 24 comments</Text>
-            </TouchableOpacity>
+            {comments > 0 && (
+                <TouchableOpacity
+                    style={styles.viewCommentsButton}
+                    onPress={handleCommentPress}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.viewCommentsText}>View all {comments} comments</Text>
+                </TouchableOpacity>
+            )}
 
             {/* Timestamp */}
-            <Text style={styles.timestamp}>28 November 2024</Text>
+            <Text style={styles.timestamp}>{formattedDate}</Text>
         </View>
     );
 };

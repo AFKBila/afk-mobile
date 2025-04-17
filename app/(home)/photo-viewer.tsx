@@ -15,6 +15,17 @@ export default function PhotoViewerScreen() {
     const initialIndex = PHOTO_DATA.findIndex(item => item.id === id) || 0;
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
+    // Prepare the data with additional fields
+    const posts = PHOTO_DATA.map(item => ({
+        ...item,
+        username: 'Chioma Okafor',
+        location: 'Ghana',
+        caption: 'No caption in mind, just a random & grateful Live boy 🙌',
+        timestamp: new Date(),
+        likeCount: 152,
+        commentCount: 24
+    }));
+
     // Handle when a photo is scrolled to
     const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: any }) => {
         if (viewableItems.length > 0) {
@@ -31,30 +42,34 @@ export default function PhotoViewerScreen() {
         <View style={styles.container}>
             <FlatList
                 ref={flatListRef}
-                data={PHOTO_DATA}
+                data={posts}
                 vertical
                 pagingEnabled
                 showsVerticalScrollIndicator={false}
                 initialScrollIndex={initialIndex}
                 getItemLayout={(data, index) => ({
-                    length: width + 250, // Reduced height for better performance
+                    length: width + 250,
                     offset: (width + 250) * index,
                     index,
                 })}
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={viewabilityConfig}
                 keyExtractor={item => item.id}
-                maxToRenderPerBatch={3} // Improve performance
-                windowSize={5} // Improve performance
-                removeClippedSubviews={true} // Improve performance
+                maxToRenderPerBatch={3}
+                windowSize={5}
+                removeClippedSubviews={true}
                 renderItem={({ item }) => (
                     <View style={styles.photoContainer}>
                         <PhotoViewer
                             imageUrl={item.imageUrl}
-                            username="Chioma Okafor"
-                            location="Ghana"
+                            username={item.username}
+                            location={item.location}
                             photoId={item.id}
-                            isActive={item.id === PHOTO_DATA[currentIndex]?.id}
+                            caption={item.caption}
+                            timestamp={item.timestamp}
+                            likeCount={item.likeCount}
+                            commentCount={item.commentCount}
+                            isActive={item.id === posts[currentIndex]?.id}
                         />
                     </View>
                 )}
@@ -70,6 +85,6 @@ const styles = StyleSheet.create({
     },
     photoContainer: {
         width: width,
-        height: width + 250, // Reduced height for better performance
+        height: width + 250,
     }
 }); 

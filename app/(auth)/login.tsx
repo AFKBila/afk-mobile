@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
         color: Colors.grey,
         marginBottom: 30,
         textAlign: 'center',
+        fontFamily: Fonts.primary,
     },
     socialButtonsContainer: {
         width: '100%',
@@ -167,11 +168,13 @@ const styles = StyleSheet.create({
         color: Colors.white,
         marginTop: 20,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     signupText: {
         color: Colors.white,
         marginTop: 20,
         fontSize: Fonts.sizes.md,
         textAlign: 'center',
+        fontFamily: Fonts.primary,
     }
 })

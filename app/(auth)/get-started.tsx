@@ -94,10 +94,12 @@ const styles = StyleSheet.create({
         color: Colors.white,
         textAlign: 'center',
         lineHeight: 32,
+        fontFamily: Fonts.primary,
     },
     highlightText: {
         fontStyle: 'italic',
         opacity: 0.6,
+        fontFamily: Fonts.primary,
     },
     buttonContainer: {
         width: '100%',
@@ -110,6 +112,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         fontSize: Fonts.sizes.sm,
         opacity: 0.6,
-        // fontFamily: Fonts.regular
+        fontFamily: Fonts.primary,
     }
 });

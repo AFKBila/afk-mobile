@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
         color: Colors.grey,
         marginBottom: 40,
         textAlign: 'center',
+        fontFamily: Fonts.primary,
     },
     photoContainer: {
         width: 200,
@@ -174,6 +175,7 @@ const styles = StyleSheet.create({
         color: Colors.grey,
         marginTop: 20,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     loadingContainer: {
         marginTop: 20,

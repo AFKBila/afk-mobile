@@ -31,7 +31,7 @@ export default function InviteFriendsScreen() {
         showToast('Invite link copied to clipboard');
     };
 
-    const inviteContact = (contactId) => {
+    const inviteContact = (contactId: string) => {
         // In a real app, this would send an invitation
         showToast('Invitation sent');
     };
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.sm,
     },
     inviteButton: {
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.link,
         paddingHorizontal: 15,
         paddingVertical: 8,
         borderRadius: 5,

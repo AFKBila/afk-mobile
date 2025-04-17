@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
@@ -16,6 +16,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useSocialStore } from '@/store/useSocialStore'
+import { Text } from '@/components/ui/Text'
 
 function Login() {
     useWarmUpBrowser();

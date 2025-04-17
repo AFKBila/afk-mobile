@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { LogBox, StyleSheet, View } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import MainContainer from '@/common/MainContainer';
 import ProfileHeader from '@/components/home/ProfileHeader';
@@ -9,9 +9,16 @@ import { useSocialStore } from '@/store/useSocialStore';
 import LoadingScreen from '@/components/common/LoadingIndicator';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
+import ProfileTabs from '@/components/profile/ProfileTabs';
+import TextPosts from '@/components/profile/TextPosts';
+import PhotoPosts from '@/components/profile/PhotoPosts';
+import MusicPosts from '@/components/profile/MusicPosts';
+
+type TabType = 'text' | 'photo' | 'music';
 
 const Profile = () => {
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<TabType>('text');
     const { user: clerkUser } = useUser();
     const { user: storeUser, updateUser } = useAuthStore();
     const { followersCount, followingCount, setCounts } = useSocialStore();
@@ -60,6 +67,21 @@ const Profile = () => {
         fetchUserData();
     }, [clerkUser]);
 
+    LogBox.ignoreAllLogs()
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'text':
+                return <TextPosts />;
+            case 'photo':
+                return <PhotoPosts />;
+            case 'music':
+                return <MusicPosts />;
+            default:
+                return <TextPosts />;
+        }
+    };
+
     if (loading) {
         return <LoadingScreen />;
     }
@@ -74,6 +96,10 @@ const Profile = () => {
                 followers={followersCount}
                 following={followingCount}
             />
+            <View style={styles.contentContainer}>
+                <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
+                {renderContent()}
+            </View>
         </MainContainer>
     );
 };
@@ -82,6 +108,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.primary,
+    },
+    contentContainer: {
+        flex: 1,
     },
 });
 

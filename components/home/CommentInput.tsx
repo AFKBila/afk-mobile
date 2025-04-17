@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     Image,
     Keyboard,
-    Alert
+    Alert,
+    FlatList
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
@@ -16,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 
 interface CommentInputProps {
-    onSubmit?: (comment: string, imageUri?: string) => void;
+    onSubmit?: (comment: string, imageUris?: string[]) => void;
     placeholder?: string;
     username?: string;
 }
@@ -28,13 +29,13 @@ const CommentInput: React.FC<CommentInputProps> = ({
 }) => {
     const [comment, setComment] = useState('');
     const [isFocused, setIsFocused] = useState(false);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
     const handleSubmit = () => {
-        if ((comment.trim().length > 0 || selectedImage) && onSubmit) {
-            onSubmit(comment, selectedImage || undefined);
+        if ((comment.trim().length > 0 || selectedImages.length > 0) && onSubmit) {
+            onSubmit(comment, selectedImages.length > 0 ? selectedImages : undefined);
             setComment('');
-            setSelectedImage(null);
+            setSelectedImages([]);
             Keyboard.dismiss();
         }
     };
@@ -67,7 +68,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
             });
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
-                setSelectedImage(result.assets[0].uri);
+                setSelectedImages(prev => [...prev, result.assets[0].uri]);
             }
         } catch (error) {
             console.error('Error taking photo:', error);
@@ -85,15 +86,21 @@ const CommentInput: React.FC<CommentInputProps> = ({
                 allowsEditing: true,
                 aspect: [4, 3],
                 quality: 0.8,
+                allowsMultipleSelection: true,
             });
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
-                setSelectedImage(result.assets[0].uri);
+                const newImages = result.assets.map(asset => asset.uri);
+                setSelectedImages(prev => [...prev, ...newImages]);
             }
         } catch (error) {
             console.error('Error picking image:', error);
             Alert.alert('Error', 'Failed to pick image. Please try again.');
         }
+    };
+
+    const removeImage = (uri: string) => {
+        setSelectedImages(prev => prev.filter(img => img !== uri));
     };
 
     return (
@@ -121,15 +128,25 @@ const CommentInput: React.FC<CommentInputProps> = ({
                         onBlur={() => setIsFocused(false)}
                     />
 
-                    {selectedImage && (
-                        <View style={styles.selectedImageContainer}>
-                            <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-                            <TouchableOpacity
-                                style={styles.removeImageButton}
-                                onPress={() => setSelectedImage(null)}
-                            >
-                                <Ionicons name="close-circle" size={24} color={Colors.white} />
-                            </TouchableOpacity>
+                    {selectedImages.length > 0 && (
+                        <View style={styles.selectedImagesContainer}>
+                            <FlatList
+                                data={selectedImages}
+                                keyExtractor={(item, index) => `selected-image-${index}`}
+                                horizontal
+                                showsHorizontalScrollIndicator={true}
+                                renderItem={({ item }) => (
+                                    <View style={styles.imageWrapper}>
+                                        <Image source={{ uri: item }} style={styles.selectedImage} />
+                                        <TouchableOpacity
+                                            style={styles.removeImageButton}
+                                            onPress={() => removeImage(item)}
+                                        >
+                                            <Ionicons name="close-circle" size={24} color={Colors.white} />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            />
                         </View>
                     )}
 
@@ -146,15 +163,15 @@ const CommentInput: React.FC<CommentInputProps> = ({
                             <TouchableOpacity
                                 style={[
                                     styles.postButton,
-                                    (comment.trim().length > 0 || selectedImage) && styles.postButtonActive
+                                    (comment.trim().length > 0 || selectedImages.length > 0) && styles.postButtonActive
                                 ]}
                                 onPress={handleSubmit}
-                                disabled={comment.trim().length === 0 && !selectedImage}
+                                disabled={comment.trim().length === 0 && selectedImages.length === 0}
                             >
                                 <Text
                                     style={[
                                         styles.postButtonText,
-                                        (comment.trim().length > 0 || selectedImage) && styles.postButtonTextActive
+                                        (comment.trim().length > 0 || selectedImages.length > 0) && styles.postButtonTextActive
                                     ]}
                                 >
                                     Post
@@ -208,19 +225,23 @@ const styles = StyleSheet.create({
         minHeight: 24,
         padding: 0,
     },
-    selectedImageContainer: {
+    selectedImagesContainer: {
         marginTop: 8,
+        height: 120,
+    },
+    imageWrapper: {
         position: 'relative',
+        marginRight: 8,
     },
     selectedImage: {
-        width: '100%',
-        height: 200,
+        width: 120,
+        height: 120,
         borderRadius: 8,
     },
     removeImageButton: {
         position: 'absolute',
-        top: 8,
-        right: 8,
+        top: 4,
+        right: 4,
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 12,
     },

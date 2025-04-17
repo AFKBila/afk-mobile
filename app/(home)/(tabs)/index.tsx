@@ -1,5 +1,5 @@
-import { Button, StyleSheet, Text, View, TouchableOpacity, Alert, Image, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import { Button, StyleSheet, Text, View, TouchableOpacity, Alert, Image, FlatList, RefreshControl } from 'react-native'
+import React, { useState, useCallback } from 'react'
 import MainContainer from '@/common/MainContainer'
 import { useAuth } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
@@ -46,23 +46,45 @@ const AppHeader = () => {
 interface Post {
     id: string;
     text: string;
-    imageUri?: string;
+    imageUris?: string[];
     timestamp: number;
 }
 
 function Home() {
     const { isLoaded } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const handlePostSubmit = (comment: string, imageUri?: string) => {
+    const handlePostSubmit = (comment: string, imageUris?: string[]) => {
         const newPost: Post = {
             id: Date.now().toString(),
             text: comment,
-            imageUri,
+            imageUris,
             timestamp: Date.now()
         };
         setPosts([newPost, ...posts]);
     };
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            // In the future, this is where you'll fetch posts from Firebase
+            // For now, we'll just simulate a delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // You can add test data here if you want
+            // const testPost = {
+            //     id: `test-${Date.now()}`,
+            //     text: 'Refreshed post',
+            //     timestamp: Date.now()
+            // };
+            // setPosts(prevPosts => [testPost, ...prevPosts]);
+        } catch (error) {
+            console.error('Error refreshing posts:', error);
+        } finally {
+            setRefreshing(false);
+        }
+    }, []);
 
     if (!isLoaded) {
         return (
@@ -84,16 +106,43 @@ function Home() {
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                         <View style={styles.postContainer}>
-                            {item.imageUri && (
-                                <Image
-                                    source={{ uri: item.imageUri }}
-                                    style={styles.postImage}
-                                    resizeMode="cover"
-                                />
+                            {item.imageUris && item.imageUris.length > 0 && (
+                                <View style={styles.imageContainer}>
+                                    {item.imageUris.length === 1 ? (
+                                        <Image
+                                            source={{ uri: item.imageUris[0] }}
+                                            style={styles.postImage}
+                                            resizeMode="cover"
+                                        />
+                                    ) : (
+                                        <FlatList
+                                            data={item.imageUris}
+                                            keyExtractor={(uri, index) => `${item.id}-image-${index}`}
+                                            horizontal
+                                            showsHorizontalScrollIndicator={true}
+                                            renderItem={({ item: uri }) => (
+                                                <Image
+                                                    source={{ uri }}
+                                                    style={styles.multipleImage}
+                                                    resizeMode="cover"
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                </View>
                             )}
                             <Text style={styles.postText}>{item.text}</Text>
                         </View>
                     )}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={Colors.white}
+                            colors={[Colors.primary]}
+                            progressBackgroundColor={Colors.secondary}
+                        />
+                    }
                 />
             ) : (
                 <View style={styles.emptyContainer}>
@@ -144,6 +193,20 @@ const styles = StyleSheet.create({
     postContainer: {
         padding: 16,
     },
+    imageContainer: {
+        marginBottom: 8,
+    },
+    postImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+    },
+    multipleImage: {
+        width: 250,
+        height: 200,
+        borderRadius: 8,
+        marginRight: 8,
+    },
     postText: {
         color: Colors.white,
         fontFamily: Fonts.primary,
@@ -176,12 +239,6 @@ const styles = StyleSheet.create({
     starIcon: {
         width: 20,
         height: 20,
-    },
-    postImage: {
-        width: '100%',
-        height: 200,
-        borderRadius: 8,
-        marginBottom: 8,
     },
 })
 

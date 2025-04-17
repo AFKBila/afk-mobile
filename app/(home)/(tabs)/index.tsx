@@ -13,11 +13,12 @@ import PostItem, { PostData } from '@/components/home/PostItem'
 // Header component for the app
 const AppHeader = () => {
     const handleFavoritePress = () => {
-        router.push('/(home)/favourite');
+        router.push('/(home)/scan-qr');
     };
 
     const handleLikesPress = () => {
         // Handle likes press
+        router.push('/(home)/favourite');
     };
 
     return (

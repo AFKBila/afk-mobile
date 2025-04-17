@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import * as ImagePicker from 'expo-image-picker';
 
 interface ProfileHeaderProps {
     name: string;
@@ -21,15 +23,46 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     followers,
     following
 }) => {
+    const handleAvatarPress = () => {
+        // Navigate to QR code scan screen
+        router.push('/(home)/scan-qr');
+    };
+
+    const handleImagePicker = async () => {
+        // Request permission
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert('Permission to access camera roll is required!');
+            return;
+        }
+
+        // Launch image picker
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            // Here you would update the user's profile image
+            console.log('Selected image:', result.assets[0].uri);
+            // Later functionality will be implemented to update the profile image
+        }
+    };
+
     return (
         <View style={styles.container}>
             {/* Profile Info */}
             <View style={styles.profileInfo}>
                 <View style={styles.profileRow}>
-                    <Image
-                        source={require('@/assets/images/p-1.jpg')}
-                        style={styles.avatar}
-                    />
+                    <TouchableOpacity onPress={handleAvatarPress} style={styles.avatarContainer}>
+                        <Image
+                            source={require('@/assets/images/p-1.jpg')}
+                            style={styles.avatar}
+                        />
+                    </TouchableOpacity>
                     <View style={styles.profileText}>
                         <Text style={styles.name}>{"Chioma Okafor"}</Text>
                         <Text style={styles.location}>{"Nigeria"}</Text>
@@ -69,18 +102,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 12,
     },
+    avatarContainer: {
+        marginRight: 12,
+    },
     avatar: {
         width: 60,
         height: 60,
         borderRadius: 30,
-        marginRight: 12,
     },
     profileText: {
         flex: 1,
     },
     name: {
         fontSize: Fonts.sizes.lg,
-        color: Colors.white,
+        color: Colors.brown + '95',
         fontWeight: '600',
         marginBottom: 4,
     },

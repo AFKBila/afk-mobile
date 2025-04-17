@@ -1,34 +1,54 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import { PHOTO_DATA } from '@/data';
 
-// Sample data - in a real app, this would come from your data store
-const samplePhotoPosts = [
-    { id: '1', description: 'Beautiful sunset at the beach' },
-    { id: '2', description: 'Family gathering last weekend' },
-    { id: '3', description: 'Traditional attire for the cultural festival' },
-    { id: '4', description: 'Art exhibition in downtown Lagos' },
+// Fixed number of columns
+const numColumns = 3;
+
+// Fallback data in case the import fails
+const fallbackData = [
+    { id: '1', imageUrl: require('@/assets/images/p-1.jpg') },
+    { id: '2', imageUrl: require('@/assets/images/p-1.jpg') },
+    { id: '3', imageUrl: require('@/assets/images/p-1.jpg') },
 ];
 
 const PhotoPosts = () => {
+    // Use the imported data or fallback to an empty array if undefined
+    const photoData = PHOTO_DATA || fallbackData;
+
+    const handlePhotoPress = (id: string) => {
+        router.push(`/(home)/photo-viewer?id=${id}`);
+    };
+
+    const renderItem = ({ item }: { item: { id: string; imageUrl: any } }) => (
+        <TouchableOpacity
+            style={styles.imageContainer}
+            onPress={() => handlePhotoPress(item.id)}
+        >
+            <Image source={item.imageUrl} style={styles.image} />
+        </TouchableOpacity>
+    );
+
     return (
         <View style={styles.container}>
-            <FlatList
-                data={samplePhotoPosts}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View style={styles.postContainer}>
-                        <View style={styles.photoPlaceholder} />
-                        <Text style={styles.postDescription}>{item.description}</Text>
-                    </View>
-                )}
-                ListEmptyComponent={
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No photo posts yet</Text>
-                    </View>
-                }
-            />
+            {photoData.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>No photos yet</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={photoData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    numColumns={numColumns}
+                    columnWrapperStyle={styles.row}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.gridContainer}
+                />
+            )}
         </View>
     );
 };
@@ -38,31 +58,31 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.primary,
     },
-    postContainer: {
-        padding: 16,
-        borderBottomWidth: 0.5,
-        borderBottomColor: Colors.secondary,
-    },
-    photoPlaceholder: {
-        height: 200,
-        backgroundColor: Colors.secondary,
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    postDescription: {
-        color: Colors.white,
-        fontSize: Fonts.sizes.md,
+    gridContainer: {
+        padding: 1,
     },
     emptyContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        paddingVertical: 40,
     },
     emptyText: {
         color: Colors.grey,
         fontSize: Fonts.sizes.md,
-        textAlign: 'center',
+    },
+    row: {
+        flex: 1,
+        justifyContent: 'flex-start',
+    },
+    imageContainer: {
+        width: 120,
+        height: 120,
+        margin: 1,
+    },
+    image: {
+        width: '100%',
+        height: '100%',
     },
 });
 

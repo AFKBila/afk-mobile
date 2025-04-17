@@ -62,7 +62,7 @@ const Country = () => {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Navigate to final screen or home
-            router.push('/(home)/home');
+            router.push('/(home)/(tabs)/profile');
         } catch (error) {
             console.error('Navigation failed:', error);
         } finally {
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
         color: Colors.grey,
         marginBottom: 30,
         textAlign: 'center',
+        fontFamily: Fonts.primary,
     },
     countriesContainer: {
         flex: 1,
@@ -134,5 +135,6 @@ const styles = StyleSheet.create({
         color: Colors.white,
         marginTop: 20,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     }
 })

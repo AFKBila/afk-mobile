@@ -58,7 +58,15 @@ function InitialLayout() {
 // Root layout with providers
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    GopherText: require('../assets/fonts/GopherText.otf'),
+    'GopherText': require('../assets/fonts/GopherText-Regular.otf'),
+    'GopherText-Light': require('../assets/fonts/GopherText-Light.otf'),
+    'GopherText-LightItalic': require('../assets/fonts/GopherText-LightItalic.otf'),
+    'GopherText-Medium': require('../assets/fonts/GopherText-Medium.otf'),
+    'GopherText-MediumItalic': require('../assets/fonts/GopherText-MediumItalic.otf'),
+    'GopherText-Regular': require('../assets/fonts/GopherText-Regular.otf'),
+    'GopherText-RegularItalic': require('../assets/fonts/GopherText-RegularItalic.otf'),
+    'GopherText-Thin': require('../assets/fonts/GopherText-Thin.otf'),
+    'GopherText-ThinItalic': require('../assets/fonts/GopherText-ThinItalic.otf'),
   });
 
   useEffect(() => {
@@ -73,13 +81,14 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <ClerkProvider publishableKey={PUBLISHABLE_KEY} tokenCache={tokenCache}>
           <ClerkLoaded>
             <ErrorBoundary>
               <Stack
                 screenOptions={{
                   headerShown: false,
-                  animation: 'slide_from_right',
+                  // animation: 'slide_from_right',
+                  // presentation: "modal",
                   contentStyle: {
                     backgroundColor: Colors.primary
                   }

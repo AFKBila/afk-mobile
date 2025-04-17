@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, BackHandler, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, BackHandler, Alert, ActivityIndicator, Share } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
@@ -59,12 +59,40 @@ export default function MenuScreen() {
         await WebBrowser.openBrowserAsync('https://afrokabila.com');
     };
 
-    // Updated menu items based on the new requirements
+    const openAbout = async () => {
+        await WebBrowser.openBrowserAsync('https://afrokabila.com');
+    };
+
+
+
+    const handleShare = async () => {
+        try {
+            // Get the deep link URL for your app
+            const deepLink = Linking.createURL('', {
+                queryParams: {
+                    source: 'invite'
+                }
+            });
+
+
+            const webFallbackUrl = 'https://afrokabila.com/download';
+
+            await Share.share({
+                message: `Join me on Afrokabila! Download the app and connect with friends.\n\nDownload here: ${webFallbackUrl}`,
+                url: deepLink,
+            });
+        } catch (error) {
+            console.error("Error sharing:", error);
+            showToast("Failed to share", "error");
+        }
+    };
+
+
     const menuItems = [
         {
             icon: <Feather name="users" size={24} color={Colors.white} />,
             label: 'Follow and invite friends',
-            onPress: () => router.push('/(home)/menu/invite-friends')
+            onPress: handleShare
         },
         {
             icon: <Ionicons name="notifications-outline" size={24} color={Colors.white} />,
@@ -91,11 +119,11 @@ export default function MenuScreen() {
             label: 'Account',
             onPress: () => router.push('/(home)/menu/account')
         },
-        {
-            icon: <Ionicons name="language-outline" size={24} color={Colors.white} />,
-            label: 'Language',
-            onPress: () => router.push('/(home)/menu/language')
-        },
+        // {
+        //     icon: <Ionicons name="language-outline" size={24} color={Colors.white} />,
+        //     label: 'Language',
+        //     onPress: () => router.push('/(home)/menu/language')
+        // },
         {
             icon: <Ionicons name="compass-outline" size={24} color={Colors.white} />,
             label: 'Interests',
@@ -109,7 +137,8 @@ export default function MenuScreen() {
         {
             icon: <Ionicons name="information-circle-outline" size={24} color={Colors.white} />,
             label: 'About',
-            onPress: () => router.push('/(home)/menu/about')
+            // onPress: () => router.push('/(home)/menu/about')
+            onPress: openAbout
         },
     ];
 
@@ -138,14 +167,15 @@ export default function MenuScreen() {
                         </TouchableOpacity>
                     ))}
 
-                    <View style={styles.divider} />
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.accountSwitchButton}
                         onPress={() => router.push('/(home)/menu/switch-accounts')}
-                    >
+                        >
                         <Text style={styles.accountSwitchText}>Switch accounts</Text>
-                    </TouchableOpacity>
+                        </TouchableOpacity> */}
+
+                    <View style={styles.divider} />
 
                     <TouchableOpacity
                         style={styles.logoutButton}
@@ -174,7 +204,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingTop: 50,
         paddingBottom: 15,
-        paddingHorizontal: 16,
+        // paddingHorizontal: 10,
+        paddingLeft: 5,
     },
     backButton: {
         padding: 5,
@@ -184,6 +215,7 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.lg,
         fontWeight: Fonts.weights.bold as any,
         marginLeft: 20,
+        fontFamily: Fonts.primary,
     },
     scrollView: {
         flex: 1,
@@ -202,11 +234,12 @@ const styles = StyleSheet.create({
     menuItemText: {
         color: Colors.white,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     divider: {
         height: 1,
         backgroundColor: Colors.secondary,
-        opacity: 0.2,
+        opacity: 0.5,
         marginVertical: 10,
     },
     accountSwitchButton: {
@@ -215,6 +248,7 @@ const styles = StyleSheet.create({
     accountSwitchText: {
         color: Colors.link,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
     logoutButton: {
         paddingVertical: 16,
@@ -222,5 +256,6 @@ const styles = StyleSheet.create({
     logoutText: {
         color: Colors.error,
         fontSize: Fonts.sizes.md,
+        fontFamily: Fonts.primary,
     },
 }); 

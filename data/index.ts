@@ -1,0 +1,23 @@
+// Sample data for photo posts
+export const PHOTO_DATA = [
+  { id: "1", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "2", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "3", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "4", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "5", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "6", imageUrl: require("@/assets/images/p-2.jpg") },
+  { id: "7", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "8", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "9", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "10", imageUrl: require("@/assets/images/p-2.jpg") },
+  { id: "11", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "12", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "13", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "14", imageUrl: require("@/assets/images/p-2.jpg") },
+  { id: "15", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "16", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "17", imageUrl: require("@/assets/images/p-1.jpg") },
+  { id: "18", imageUrl: require("@/assets/images/p-2.jpg") },
+  //   { id: "19", imageUrl: require("@/assets/images/p-1.jpg") },
+  //   { id: "20", imageUrl: require("@/assets/images/p-1.jpg") },
+];

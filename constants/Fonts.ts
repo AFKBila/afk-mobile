@@ -1,5 +1,14 @@
 export const Fonts = {
+  // Font families
   primary: "GopherText",
+  light: "GopherText-Light",
+  lightItalic: "GopherText-LightItalic",
+  medium: "GopherText-Medium",
+  mediumItalic: "GopherText-MediumItalic",
+  regular: "GopherText-Regular",
+  regularItalic: "GopherText-RegularItalic",
+  thin: "GopherText-Thin",
+  thinItalic: "GopherText-ThinItalic",
 
   weights: {
     regular: "400",
@@ -9,6 +18,7 @@ export const Fonts = {
   },
 
   sizes: {
+    xxs: 10,
     xs: 12,
     sm: 14,
     md: 16,
@@ -18,11 +28,26 @@ export const Fonts = {
   },
 
   // Helper function to get the correct font styling
-  style: (size: number = 16, weight: string = "400") => {
+  style: (
+    size: number = 16,
+    weight: string = "regular",
+    isItalic: boolean = false
+  ) => {
+    let fontFamily = "GopherText";
+
+    if (weight === "400" || weight === "regular") {
+      fontFamily = isItalic ? "GopherText-RegularItalic" : "GopherText-Regular";
+    } else if (weight === "500" || weight === "medium") {
+      fontFamily = isItalic ? "GopherText-MediumItalic" : "GopherText-Medium";
+    } else if (weight === "300" || weight === "light") {
+      fontFamily = isItalic ? "GopherText-LightItalic" : "GopherText-Light";
+    } else if (weight === "200" || weight === "thin") {
+      fontFamily = isItalic ? "GopherText-ThinItalic" : "GopherText-Thin";
+    }
+
     return {
-      fontFamily: "GopherText",
+      fontFamily,
       fontSize: size,
-      fontWeight: weight,
     };
   },
 };

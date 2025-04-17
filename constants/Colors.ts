@@ -22,6 +22,6 @@ export const Colors: Props = {
   background: "#EEEEEE",
   success: "#90C67C",
   error: "#dc2626",
-  brown: "#8B4513",
+  brown: "#BF9264",
   lightBrown: "#D2B48C",
 };

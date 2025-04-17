@@ -167,11 +167,13 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.xl,
         color: Colors.white,
         fontWeight: Fonts.weights.bold as any,
+        fontFamily: Fonts.primary,
     },
     welcomeText: {
         fontSize: Fonts.sizes.lg,
-        color: '#A0A0A0', // Slightly muted color for the welcome text
+        color: '#A0A0A0',
         fontStyle: 'italic',
+        fontFamily: Fonts.primary,
     },
     imageContainer: {
         flex: 1,
@@ -191,10 +193,12 @@ const styles = StyleSheet.create({
     },
     footerText: {
         fontSize: Fonts.sizes.md,
-        color: '#A0A0A0', // Same muted color as welcome text
+        color: '#A0A0A0',
+        fontFamily: Fonts.primary,
     },
     retryText: {
         color: Colors.primary,
         textDecorationLine: 'underline',
+        fontFamily: Fonts.primary,
     }
 })
